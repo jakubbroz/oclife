@@ -1,4 +1,4 @@
-ownCloud
+ownTags
 ======
 
 Tagging and getting extended document information on ownCloud.
