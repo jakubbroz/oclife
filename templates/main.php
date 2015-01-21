@@ -46,6 +46,17 @@ $l = new \OC_L10N('oclife');
         <option value="AllRO"><?php p($l->t('Read only')) ?></option>
         <option value="AllRW"><?php p($l->t('Can modify')) ?></option>
     </select>
+    
+    <div style="float:right">
+    <div class="onoffswitch">
+    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+    <label class="onoffswitch-label" for="myonoffswitch">
+        <span class="onoffswitch-inner"></span>
+        <span class="onoffswitch-switch"></span>
+    </label>
+    </div>
+    </div>
+    
 </div>
 
 <div id="renameTag" title="<?php p($l->t('Rename tag')) ?>">
@@ -65,6 +76,15 @@ $l = new \OC_L10N('oclife');
             <input type="text" name="newTagName" style="width: 300px;" id="newTagName" class="text ui-widget-content ui-corner-all" />
             <input type="hidden" name="parentID" id="parentID" value="-1" />
         </fieldset>
+    </form>
+</div>
+
+
+<div id="ObrisiIh" title="<?php p($l->t('Check the tags you want to delete')) ?>">
+    <form>
+        <ul id="lista">
+            
+        </ul>
     </form>
 </div>
 

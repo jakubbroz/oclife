@@ -48,4 +48,6 @@ switch($op) {
     }
 }
 
+$resul=array('result'=>$result);
+echo json_encode($resul);
 die($result);

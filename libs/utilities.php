@@ -19,6 +19,10 @@
  */
 
 namespace OCA\OCLife;
+
+
+
+
 class utilities {
     /**
      * Format a file size in human readable form
@@ -37,9 +41,9 @@ class utilities {
 
         $result = round($dimension, $precision) . ' ' . $units[$pow];
         
-        if($addOriginal === TRUE) {
-            $result .= sprintf(" (%s bytes)", number_format($bytes));
-        }
+       // if($addOriginal === TRUE) {
+        //    $result .= sprintf(" (%s bytes)", number_format($bytes));
+        //}
         
         return $result;
     }
@@ -165,6 +169,9 @@ class utilities {
             $fileID = $item->getId();
             $fileMime = $item->getMimetype();
             $fileName = $item->getName();
+            $fileDate=$item->getMTime();
+            $fileEtag=$item->getEtag();
+            $fileSize= $item->getSize();
             $filePath = substr($item->getPath(), strlen($user) + 2);
             
             $itemRes = array();
@@ -174,6 +181,9 @@ class utilities {
                     'fileid' => $fileID,
                     'name' => $fileName,
                     'mimetype' => $fileMime,
+                    'size'=> $fileSize,
+                    'etag'=>$fileEtag,
+                    'date'=>$fileDate,
                     'path' => $filePath
                 );
                         
@@ -233,18 +243,84 @@ class utilities {
      * @return string
      */
     public static function prepareTile($fileData) {
+        
         $pathInfo = substr(pathinfo($fileData['path'], PATHINFO_DIRNAME), 6);
         $filePath = strpos($fileData['path'], 'files') === FALSE ? $fileData['path'] : substr($fileData['path'], 5);
         
         $result = '<div class="oclife_tile" data-fileid="' . $fileData['fileid'] . '" data-filePath="' . $pathInfo . '" data-fullPath="' . $filePath . '">';
-        $result .= '<div>' . $fileData['name'] . '</div>';
-        $thumbPath = \OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
+        $result .= '<div class="oclife_ime">' . $fileData['name'] . '</div>';
+        
+        $exts = split("[/\\.]", $fileData['name']);
+        $n    = count($exts)-1;
+        $ext  =strtolower($exts[$n]);
+             
+
+             if(strcmp($ext,"pdf")==0) {              
+                  $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/PDFLogo.jpg');
+            }
+            else if(strcmp($ext,"xls")==0) {
+               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/xls.png');}
+            else if(strcmp($ext,"mp3")==0 || strcmp($ext,"audio")==0 || strcmp($ext,"wav")==0 || strcmp($ext,"aac")==0 || strcmp($ext,"wma")==0){
+               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/music.jpg'); 
+            }
+            else if(strcmp($ext,"odt")==0 || strcmp($ext,"doc")==0 || strcmp($ext,"docx")==0 || strcmp($ext,"srt")==0 || strcmp($ext,"txt")==0 || strcmp($ext,"asa")==0) {
+                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/text.png');
+            }
+            else if(strcmp($ext,"mp4")==0 || strcmp($ext,"avi")==0 || strcmp($ext,"flv")==0 || strcmp($ext,"mpeg")==0 || strcmp($ext,"m4v")==0 || strcmp($ext,"mkv")==0) {
+                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/video.png');
+            }
+            else if(strcmp($ext,"ppt")==0) {
+                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/presentacion.jpg');
+            }
+            else if(strcmp($ext,"zip")==0 || strcmp($ext,"7z")==0 || strcmp($ext,"rar")==0 || strcmp($ext,"tar.gz")==0 || strcmp($ext,"tar")==0) {
+                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/zip.jpg');
+            }
+            else {
+            $thumbPath = \OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
+            }
+        
+        
         $result .= '<img src="' . $thumbPath . '" />';
         $result .= '</div>';
         
         return $result;
     }
     
+    public static function prepareTile1($fileData) {
+       
+        $name=$fileData['name'];
+        $size=\OCA\OCLife\utilities::formatBytes($fileData['size'], 2, TRUE);
+        $date=date('d/m/Y H:i:s', $fileData['date']);
+        
+         
+        $pathInfo = substr(pathinfo($fileData['path'], PATHINFO_DIRNAME), 6);
+        $filePath = strpos($fileData['path'], 'files') === FALSE ? $fileData['path'] : substr($fileData['path'], 5);
+        
+                
+        $result="<tr filepath='".$filePath."' fileid='".$fileData['fileid']."'><td>".$name."</td>";
+       
+        $exts = split("[/\\.]", $fileData['name']);
+        $n    = count($exts)-1;
+        $extension  =strtolower($exts[$n]);
+         $l = new \OC_L10N('oclife');
+        if($extension=="jpg" || $extension=="jpeg" || $extension=="png" || $extension=="tiff" || $extension=="pdf" || $extension=="odt") {              
+        
+            $result.="<td id='download'>".$l->t('Download')."</td><td id='preview'>".$l->t('Preview')."</td><td id='delete'>".$l->t('Delete tag')."</td>";
+        }    
+        else {
+            $result.="<td id='download'>".$l->t('Download')."</td><td></td><td id='delete'>".$l->t('Delete tag')."</td>";
+        }
+
+       
+       
+       
+        $result.="<td id='kraj'>".$size."</td><td id='kraj'>".$date."</td></tr>";
+        return $result;
+         
+        
+    
+            
+    }
     /**
      * Glue an array with key and value on an html table
      * @param Array $myArray

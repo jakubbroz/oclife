@@ -45,6 +45,7 @@ class hTags {
 
         return $result;
     }
+    
 
     /**
      * Search a tag from it's ID
@@ -83,8 +84,23 @@ class hTags {
         }
 	
         // Check if tag already exists
-        if(count($this->searchTag($tagLang, $tagDescr)) != 0) {
-            return FALSE;
+         $ctags = new \OCA\OCLife\hTags();
+        $tagData = $ctags->getAllTags('xx');
+        $searchKey = $tagDescr;
+        
+        $result1 = 1;
+
+        foreach($tagData as $tag) {
+            if($tag['tagid'] !== '-1') {       
+                if(strcmp(strtolower($tag['descr']), strtolower($searchKey))== 0) {
+                    $result1= $tag['descr'];
+                    break;
+                    }         
+                }
+            }
+        
+        if($result1 != 1) {
+            return $result1;
         }
 		
 	// If owner is not set, assign the actual username
@@ -493,6 +509,11 @@ class hTags {
 
                 // Delete from human readable
                 $sql = 'DELETE FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=?';
+                $args = array($id);
+                $query = \OCP\DB::prepare($sql);
+                $query->execute($args);
+                
+                $sql = 'DELETE FROM `*PREFIX*oclife_docTags` WHERE `tagid`=?';
                 $args = array($id);
                 $query = \OCP\DB::prepare($sql);
                 $query->execute($args);

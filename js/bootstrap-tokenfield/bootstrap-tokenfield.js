@@ -116,13 +116,13 @@
 
     // Set up a copy helper to handle copy & paste
     this.$copyHelper = $('<input type="text" />').css('position', 'absolute').css(hidingPosition, '-10000px').prop('tabindex', -1).prependTo( this.$wrapper )
-
+    this.$wrapper.css('margin', "auto");
     // Set wrapper width
     if (elStyleWidth) {
-      this.$wrapper.css('width', elStyleWidth);
+    this.$wrapper.css('width', "90%");
     }
     else if (elCSSWidth) {
-      this.$wrapper.css('width', elCSSWidth);
+      this.$wrapper.css('width', "90%");
     }
     // If input is inside inline-form with no width set, set fixed width
     else if (this.$element.parents('.form-inline').length) {
@@ -489,6 +489,7 @@
           // Create token
           if (this.$input.is(document.activeElement) && this.$input.val().length || this.$input.data('edit')) {
             return this.createTokensFromInput(e, this.$input.data('edit'));
+          
           }
 
           // Edit token
@@ -656,7 +657,7 @@
       if (this.$input.data( 'edit' )) {
         this.unedit(focus)
       }
-
+  
       return false // Prevent form being submitted
     }
 

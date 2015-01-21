@@ -24,7 +24,7 @@ $(document).ready(function(){
             });
 
             var infoIconPath = OC.imagePath('oclife','icon_info');
-            FileActions.register('file', t('oclife', 'Informations'), OC.PERMISSION_UPDATE, infoIconPath, function(fileName) {
+            FileActions.register('file', t('oclife', 'Tag'), OC.PERMISSION_UPDATE, infoIconPath, function(fileName) {
                 // Action to perform when clicked
                 if(scanFiles.scanning) { return; } // Workaround to prevent additional http request block scanning feedback
 
@@ -36,19 +36,14 @@ $(document).ready(function(){
 
     // This is the div where informations will appears
     if(extInfoActionRegistered) {
-        $('#content').append('<div id="oclife_infos" title="' + t('oclife', 'Informations') + '">\n\
+        $('#content').append('<div id="oclife_infos" title="' + t('oclife', 'Tag') + '">\n\
             <div id="oclife_infoData">\n\
             <table>\n\
             <tr>\n\
             <td id="oclife_preview"></td>\n\
             <td style="vertical-align: top; padding: 10px;">\n\
-            <div id="oclife_infosData" style="width: 425px; height: 300px;">\n\
-            <ul>\n\
-                <li><a href="#basicInfoContent">' + t('oclife', 'Basic') + '</a></li>\n\
-                <li><a href="#exifInfoContent">' + t('oclife', 'EXIF') + '</a></li>\n\
-            </ul>\n\
-            <div id="basicInfoContent" style="height: 250px; overflow:scroll;"></div>\n\
-            <div id="exifInfoContent" style="height: 250px; overflow:scroll;"></div>\n\
+            <div id="oclife_infosData" style="width: 300px; height: 200px;">\n\
+            <div id="basicInfoContent" style="height: 200px; overflow:scroll;"></div>\n\
             </div></td>\n\
             </tr>\n\
             </table>\n\
@@ -108,8 +103,8 @@ $(document).ready(function(){
 
     $("#oclife_infos").dialog({
         autoOpen: false,
-        width: 800,
-        height: 480,
+        width: 600,
+        height: 400,
         modal: true,
 
         close: function() {
@@ -136,17 +131,50 @@ $(document).ready(function(){
     $("#oclife_infosData").tabs();
 });
 
-
+//adding new tag to database
 function handleTagAdd(eventData, selFileID) {
     var tagID = eventData.attrs.value;
     var tagLabel = eventData.attrs.label;
     var newTag = (tagID.toString() === tagLabel);
+    
+    
+    //check if tag exist
+    if(newTag) {
+    $.ajax({
+                url: OC.filePath('oclife', 'ajax', 'getExistingTag.php'),
+                async: false,
+                timeout: 2000,
+
+                data: {
+                   term: tagLabel
+                    },
+
+                success: function(data) {
+                    var resArray = jQuery.parseJSON(data);
+                    if(parseInt(resArray.result) > -1) 
+                        {
+                            tagID = parseInt(resArray.result);
+                            newTag=false;
+                            eventData.attrs.value=tagID;
+                            $("span.token-label").last().text(resArray.name);
+                        }                               
+                    },
+                error: function (xhr, status) {
+                    window.alert(t('oclife', 'Unable to get the tags! Ajax error.'));
+                    }
+    });
+    }
+       
+    
+
+
 
     if(newTag) {
         var createNew = window.confirm(t('oclife', 'The tag "') + tagLabel + t('oclife', '" doesn\'t exist; would you like to create a new one?'));                                                        
 
         if(!createNew) {
-            $(eventData.relatedTarget).addClass('invalid');
+            //zamenjeno za invalid da ne pamti bezveze
+            $(eventData.relatedTarget).remove();
         } else {
             $.ajax({
                 url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
@@ -166,7 +194,7 @@ function handleTagAdd(eventData, selFileID) {
                     var resArray = jQuery.parseJSON(result);
                     if(resArray.result === 'OK') {
                         tagID = parseInt(resArray.key);
-
+                        eventData.attrs.value=tagID;
                         newTag = false;                                                    
                     } else {
                         window.alert(t('oclife', 'Unable to create the tag! Ajax error.'));
@@ -176,6 +204,7 @@ function handleTagAdd(eventData, selFileID) {
                 error: function(xhr, status) {
                     window.alert(t('oclife', 'Unable to create the tag! Ajax error.'));
                     $(eventData.relatedTarget).addClass('invalid');
+                    //$(eventData.relatedTarget).addClass('invalid');
                 }
             });
         }
@@ -191,6 +220,17 @@ function handleTagAdd(eventData, selFileID) {
                 op: 'add',
                 fileID: JSON.stringify(selFileID),
                 tagID: tagID
+            },
+            
+            success:function(data) {
+                //raise error if file is already taged with chosen tag
+                var resArray = jQuery.parseJSON(data);
+                if(!resArray.result) {
+                    window.alert(t('oclife', 'Tag')+" \""+$("span.token-label").last().text()+"\" "+t('oclife', 'already exists'));
+                    
+                    $(eventData.relatedTarget).remove();
+                    
+                }
             },
 
             error: function (xhr, status) {
@@ -215,7 +255,7 @@ function handleTagRemove(eventData, selFileID) {
         },
 
         success: function(result) {
-            if(result === "0") {
+            if(!result) {
                 window.alert(t('oclife', 'Unable to remove the tag! Data base error.'));
             }
         },
@@ -261,7 +301,8 @@ function showFileInfo(fileName) {
                     $.ajax({
                             url: OC.filePath('oclife', 'ajax', 'getTagFlat.php'),
                             data: {
-                                term: request.term
+                                //term: request.term
+                                term: request.term.toLowerCase()
                             },
 
                             success: function(data) {
@@ -314,8 +355,10 @@ function showFileInfo(fileName) {
 
     // Install event handlers
     $('#oclife_tags').on('tokenfield:createdtoken', function(e) {
+        $("#ui-id-5").empty();
+        document.getElementById("oclife_tags-tokenfield").value="";
         handleTagAdd(e, fileID);
-    });
+     });
 
     $('#oclife_tags').on('tokenfield:removedtoken', 
         function (e) {
@@ -439,6 +482,8 @@ function populateFileInfo(filePath) {
 			
 	// Install event handlers
 	$('#oclife_selfiles_tags').on('tokenfield:createdtoken', function(e) {
+                $("#ui-id-5").empty();
+                document.getElementById("oclife_selfiles_tags-tokenfield").value="";
 		handleTagAdd(e, fileID);
 	});
 
@@ -449,6 +494,8 @@ function populateFileInfo(filePath) {
 	);
 	
 	$('#oclife_allfiles_tags').on('tokenfield:createdtoken', function(e) {
+                  $("#ui-id-5").empty();
+                document.getElementById("oclife_allfiles_tags-tokenfield").value="";
 		handleTagAdd(e, fileID);
 	});
 	

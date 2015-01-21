@@ -1,7 +1,12 @@
 var previewShown = false;
 
 $(document).ready(function() {
-    allFields = $([]).add(tagName);
+
+    
+    
+    
+    //allFields = $([]).add(tagName);
+     allFields = $([]).add(document.getElementById('tagName'));
     
     $("#tagstree").fancytree({
         extensions: ["dnd"],
@@ -49,12 +54,15 @@ $(document).ready(function() {
             }
 
             var tags = JSON.stringify(selNodesData);
-
+                
+            
+            
             $.ajax({
                 url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
 
                 data: {
-                    tags: tags
+                    tags: tags,
+                    listgrid: $("#myonoffswitch")[0].checked
                 },
 
                 type: "POST",
@@ -154,8 +162,11 @@ $(document).ready(function() {
                 nodeKey = node.key;
             }
 
-            newTagName.value = "";
-            parentID.value = nodeKey;
+           // newTagName.value = "";
+            document.getElementById('newTagName').value = "";
+           // parentID.value = nodeKey;
+            document.getElementById('parentID').value = nodeKey;
+           
 
             $( "#createTag" ).dialog( "open" );
             $(this).closest('.ui-dialog').find('.ui-dialog-buttonpane button:eq(0)').focus();
@@ -206,8 +217,9 @@ $(document).ready(function() {
                 return;
             }
             $("#tagToDelete").text(node.title);
-            deleteID.value = node.key;
-
+            //deleteID.value = node.key;
+            document.getElementById('deleteID').value=node.key; 
+            
             $( "#deleteConfirm" ).dialog( "open" );
             $(this).closest('.ui-dialog').find('.ui-dialog-buttonpane button:eq(0)').focus();
         });
@@ -284,11 +296,312 @@ $(document).ready(function() {
         ".oclife_tile",
         "click",
         function(eventData) {
-            var fileID = $(this).attr("data-fileid");
-            var filePath = $(this).attr("data-fullPath");
-
-            showPreview(filePath);
+            
         });
+       
+    $("#fileTable").delegate(
+        "#Download",
+        "click",
+        function() {
+        var filePath = $(this).parent().attr("data-fullPath");
+        var spliter=filePath;
+        var dir=spliter.split("/");
+        var file=dir[dir.length-1];
+        spliter=filePath.substring((filePath.length-file.length),0);
+        var p=spliter.split('/').join("%2F");
+        
+        window.location.href="/owncloud/index.php/apps/files/ajax/download.php?dir="+p+"&files="+file;                
+        
+        });
+        
+        
+         $pom1=$("<div id='Download' style='width:100%;background-color:red;position:relative;top:-228px;display:hidden'>"+t('oclife','Download')+"</div>");
+         $pom2=$("<div id='Delete' style='width:100%;background-color:blue;position:relative;top:-228px;display:hidden'>"+t('oclife','Delete tag')+"</div>");        
+         $pom3=$("<div id='Preview' style='width:100%;background-color:purple;position:relative;top:-228px;display:hidden'>"+t('oclife','Preview')+"</div>");        
+         $pom4=null;
+         $pom6=null;
+            
+     $("#fileTable").delegate(
+        ".oclife_tile",
+        "mouseover",
+        function() {
+            var filePath = $(this).attr("data-fullPath");
+            var nesto=filePath.split(".");
+            var extension=nesto[nesto.length-1].toLowerCase();
+            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff" || extension=="pdf" || extension=="odt") {              
+               $pom1.appendTo($(this));
+               $pom3.appendTo($(this));
+               $pom2.appendTo($(this));
+               $pom1.show();
+               $pom3.show();
+               $pom2.show();                
+            }  
+        else {                     
+            $pom1.appendTo($(this));
+            $pom2.appendTo($(this));
+            $pom1.show();
+            $pom2.show();
+        }
+        });
+        
+       $("#fileTable").delegate(
+        ".oclife_tile",
+        "mouseout",
+        function() {
+            $pom1.hide();
+            $pom2.hide();
+            $pom3.hide();  
+            });
+           
+            
+        
+        $('#fileTable').delegate(
+        "#download",
+        "click",
+        function() {
+        var filePath = $(this).parent().attr("filepath");
+       var spliter=filePath;
+        var dir=spliter.split("/");
+        var file=dir[dir.length-1];
+        spliter=filePath.substring((filePath.length-file.length),0);
+        var p=spliter.split('/').join("%2F");
+        
+        window.location.href="/owncloud/index.php/apps/files/ajax/download.php?dir="+p+"&files="+file;                
+        });
+        
+        $('#fileTable').delegate(
+        "#delete",
+        "click",
+        function() {
+        var fileID = $(this).parent().attr("fileid");
+        $pom6=fileID;
+        Nadji(fileID);
+    });
+        
+        $('#fileTable').delegate(
+        "#preview",
+        "click",
+        function() {
+        var filePath = $(this).parent().attr("filePath");
+            var nesto=filePath.split(".");
+            var extension=nesto[nesto.length-1].toLowerCase();
+            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff") {
+                showPreview(filePath);
+            }  
+            if(extension=="pdf") {
+                    showPDFviewerPom("%2F",filePath);
+            }
+        });
+        
+        
+        
+        
+        $('#fileTable').delegate(
+        "#Delete",
+        "click",
+        function() {
+        
+        var fileID = $(this).parent().attr("data-fileid");
+        $pom6=fileID;
+        Nadji(fileID);
+                 
+        });
+        
+        
+        function Nadji(fileID) {
+                      
+        $.ajax({
+            url: OC.filePath('oclife', 'ajax', 'getTagsForFile.php'),
+            async: false,
+            timeout: 2000,
+
+        data: {
+            id: fileID
+        },
+
+        success: function(result) {
+           var niz=null;
+           var niz=JSON.parse(result);
+           var i=0;
+           $pom5=document.getElementById("lista");
+           $pom5.innerHTML="";
+           while(i<niz.length) {
+           $pom4=($("<li id='listali' style='list-style-type: none;margin-left:40%;' ><input type='checkbox' /><input type='hidden' value='"+niz[i].value+"'/>"+niz[i].label+"</li>"));
+           i++;          
+           $pom4.appendTo($pom5);
+           }
+           
+           $( "#ObrisiIh" ).dialog( "open" );
+        },
+
+        error: function (xhr, status) {
+            window.alert(t('oclife', 'Unable to get actual tags for this document! Ajax error!'));
+        },
+
+        type: "POST"});
+        }
+        
+        
+        $( "#ObrisiIh" ).dialog({
+        autoOpen: false,
+        height: 200,
+        width: 300,
+        modal: true,
+        resizable: false,
+        buttons: {
+            Confirm: {
+                text: t('oclife', 'Confirm'),
+                click: function() {
+                    Obrisi();
+                   $( this ).dialog( "close" );
+                }
+            },
+
+            Cancel: {
+                text: t('oclife', 'Cancel'),
+                click: function() {
+                    $( this ).dialog( "close" );
+                }
+            }
+        },
+
+        close: function() {
+            allFields.val("").removeClass( "ui-state-error" );
+        }
+    });
+    
+    $('#myonoffswitch').click(function() {
+         var selectedNodes = $("#tagstree").fancytree("getTree").getSelectedNodes();
+         var selNodesData = new Array();
+
+        for(i = 0; i < selectedNodes.length; i++) {
+            var nodeData = new Object();
+            nodeData.key = selectedNodes[i].key;
+            nodeData.title = selectedNodes[i].title;
+
+            selNodesData.push(nodeData);
+        }
+
+        var tags = JSON.stringify(selNodesData);
+
+        $.ajax({
+            url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+
+            data: {
+                tags: tags,
+                 listgrid: $("#myonoffswitch")[0].checked
+            },
+
+            type: "POST",
+
+            success: function( result ) {
+                $("#oclife_fileList").html(result);
+
+                if(result === '') {
+                    $("#oclife_emptylist").css("display", "block");
+                } else {
+                    $("#oclife_emptylist").css("display", "none");
+                }
+            },
+
+            error: function( xhr, status ) {
+                updateStatusBar(t('oclife', 'Unable to get files list!'));
+            }
+        });  
+});
+    
+
+        
+        function Obrisi() {
+            var i=0;
+            while(i<$pom5.childNodes.length) {
+                if($pom5.childNodes[i].childNodes[0].checked==true) {
+                    
+                    $.ajax({
+                        url: OC.filePath('oclife', 'ajax', 'tagsUpdate.php'),
+                        async: false,
+                        timeout: 1000,
+
+                        data: {
+                            op: 'remove',
+                            fileID: $pom6,
+                            tagID: $pom5.childNodes[i].childNodes[1].value
+                        },
+
+                        success:function(data) {
+                                    var selectedNodes = $("#tagstree").fancytree("getTree").getSelectedNodes();
+                                    var selNodesData = new Array();
+
+                                    for(i = 0; i < selectedNodes.length; i++) {
+                                        var nodeData = new Object();
+                                        nodeData.key = selectedNodes[i].key;
+                                        nodeData.title = selectedNodes[i].title;
+
+                                        selNodesData.push(nodeData);
+                                    }
+
+                                    var tags = JSON.stringify(selNodesData);
+
+                                    $.ajax({
+                                        url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+
+                                        data: {
+                                            tags: tags,
+                                             listgrid: $("#myonoffswitch")[0].checked
+                                        },
+
+                                        type: "POST",
+
+                                        success: function( result ) {
+                                            $("#oclife_fileList").html(result);
+
+                                            if(result === '') {
+                                                $("#oclife_emptylist").css("display", "block");
+                                            } else {
+                                                $("#oclife_emptylist").css("display", "none");
+                                            }
+                                        },
+
+                                        error: function( xhr, status ) {
+                                            updateStatusBar(t('oclife', 'Unable to get files list!'));
+                                        }
+                                    });  
+                        },
+
+                        error: function (xhr, status) {
+                            window.alert(t('oclife', 'Unable to add the tag! Ajax error.'));
+                            $(eventData.relatedTarget).addClass('invalid');
+                        },
+
+                        type: "POST"});  
+                    
+                   }
+                i++;
+            }
+        }
+        
+        
+        $('#fileTable').delegate(
+        "#Preview",
+        "click",
+        function() {
+            $pom1.hide();
+            $pom2.hide();
+            $pom3.hide();
+            var fileID = $(this).parent().attr("data-fileid");
+            var filePath = $(this).parent().attr("data-fullPath");
+            var nesto=filePath.split(".");
+            var extension=nesto[nesto.length-1].toLowerCase();
+            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff") {
+                showPreview(filePath);
+            }  
+            if(extension=="pdf") {
+                    showPDFviewerPom("%2F",filePath);
+            }
+            
+        });
+        
+        
 
         $(window).resize(function(){
             if(previewShown) {
@@ -487,12 +800,17 @@ $(document).ready(function() {
     function renameTag() {
         var bValid = true;
         allFields.removeClass( "ui-state-error" );
-        bValid = bValid && checkLength( tagName, 1, 20 );
+        //bValid = bValid && checkLength( tagName, 1, 20 );
+        bValid = bValid && checkLength( document.getElementById("tagName"), 1, 20 );
 
         if ( bValid ) {
+            /*
             var newValue = tagName.value;
             var tagToMod = tagID.value;
-
+            */
+            var newValue = document.getElementById("tagName").value;
+            var tagToMod = document.getElementById("tagID").value;
+           
             $.ajax({
                 url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
                 async: false,
@@ -526,8 +844,8 @@ $(document).ready(function() {
                     } else if(resultData.result === 'NOTALLOWED' ) {
 			updateStatusBar(t('oclife', 'Unable to rename! Permission denied!'));
 		    } else {
-                        updateStatusBar(t('oclife', 'Unable to rename! Data base error!'));
-                    }
+                        updateStatusBar(t('oclife', 'Tag')+" \""+resultData.title+"\" "+t('oclife', 'already exists'));
+                   }
                 },
 
                 error: function( xhr, status ) {
@@ -577,11 +895,14 @@ $(document).ready(function() {
     function insertTag() {
         var bValid = true;
         allFields.removeClass( "ui-state-error" );
-        bValid = bValid && checkLength( newTagName, 1, 20 );
+        //bValid = bValid && checkLength( newTagName, 1, 20 );
+        bValid = bValid && checkLength( document.getElementById("newTagName"), 1, 20 );
 
         if ( bValid ) {
-            var newValue = newTagName.value;
-            var parent = parentID.value;
+          //  var newValue = newTagName.value;
+            //var parent = parentID.value;
+            var newValue = document.getElementById("newTagName").value;
+            var parent = document.getElementById("parentID").value;
 
             $.ajax({
                 url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
@@ -613,7 +934,7 @@ $(document).ready(function() {
 
                         updateStatusBar(t('oclife', 'Tag created successfully!'));
                     } else {
-                        updateStatusBar(t('oclife', 'Unable to create tag! Data base error!'));
+                        updateStatusBar(t('oclife', 'Tag')+" \""+resArray.title+"\" "+t('oclife', 'already exists'));
                     }
                 },
 
@@ -642,11 +963,14 @@ $(document).ready(function() {
             },
 
             Delete: {
+                
+              
                 text: t('oclife', 'Delete'),
                 click: function() {
                     $( this ).dialog( "close" );
-
-                    var tagID = deleteID.value;
+                    //updateStatusBar(t('oclife', 'dada'));
+                   // var tagID = deleteID.value;
+                    var tagID = document.getElementById('deleteID').value;
 
                     if(tagID === "-1") {
                         updateStatusBar(t('oclife', 'Invalid tag number! Nothing done!'));
@@ -750,6 +1074,79 @@ $(document).ready(function() {
 
         close: function() {
             $("#previewArea").attr("src", "");
-        }            
-    });
+        }
+    });   
+        
+
+
+
+});
+
+
+
+
+
+
+
+function hidePDFviewerPom() {
+	$('#pdframe, #pdfbar').remove();
+	if ($('#isPublic').val() && $('#filesApp').val()){
+		$('#controls').removeClass('hidden');
+	}
+	//FileList.setViewerMode(false);
+	// replace the controls with our own
+        $(".oclife_ime").removeClass('hidden');
+	$('#app-content #controls').removeClass('hidden');
+}
+
+function showPDFviewerPom(dir, filename) {
+	if(!showPDFviewerPom.shown) {
+		var $iframe;
+		var viewer = OC.linkTo('files_pdfviewer', 'viewer.php')+'?dir='+encodeURIComponent(dir).replace(/%2F/g, '/')+'&file='+encodeURIComponent(filename);
+		$iframe = $('<iframe id="pdframe" style="width:100%;height:100%;display:block;position:absolute;top:0;" src="'+viewer+'" sandbox="allow-scripts allow-same-origin" /><div id="pdfbar"><a id="close" title="Close">X</a></div>');
+		
+                $('#content').append($iframe).css({height: '100%'});
+		$('body').css({height: '100%'});
+                $('footer').addClass('hidden');
+		$('#imgframe').addClass('hidden');
+		$('.directLink').addClass('hidden');
+		$('.directDownload').addClass('hidden');
+		$('#controls').addClass('hidden');
+		$(".oclife_ime").addClass('hidden');
+		$("#pageWidthOption").attr("selected","selected");
+		// replace the controls with our own
+		$('#app-content #controls').addClass('hidden');
+		$('#pdfbar').css({position:'absolute',top:'6px',right:'5px'});
+		$('#close').css({display:'block',padding:'0 5px',color:'#BBBBBB','font-weight':'900','font-size':'16px',height:'18px',background:'transparent'}).click(function(){
+                    $(".oclife_ime").removeClass('hidden');
+                    hidePDFviewerPom();
+			});		
+	}
+}
+showPDFviewerPom.oldCode='';
+showPDFviewerPom.lastTitle='';
+
+
+$(document).ready(function(){
+	// The PDF viewer doesn't work in Internet Explorer 8 and below
+	if(!$.browser.msie || ($.browser.msie && $.browser.version >= 9)){
+		var sharingToken = $('#sharingToken').val();
+
+		// Logged-in view
+		if ($('#filesApp').val() && typeof FileActions !=='undefined'){
+ 			FileActions.register('application/pdf','Edit', OC.PERMISSION_READ, '',function(filename){
+				if($('#isPublic').val()) {
+					showPDFviewerPom('', encodeURIComponent(sharingToken)+"&files="+encodeURIComponent(filename)+"&path="+encodeURIComponent(FileList.getCurrentDirectory()));
+				} else {
+					showPDFviewerPom(encodeURIComponent(FileList.getCurrentDirectory()), encodeURIComponent(filename));
+				}
+			});
+			FileActions.setDefault('application/pdf','Edit');
+		}
+
+		// Public view
+		if ($('#isPublic').val() && $('#mimetype').val() === 'application/pdf') {
+			showPDFviewerPom('', sharingToken);
+		}
+	}
 });

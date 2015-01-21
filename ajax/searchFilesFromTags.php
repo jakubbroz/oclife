@@ -21,9 +21,11 @@
 \OCP\JSON::checkLoggedIn();
 \OCP\JSON::checkAppEnabled('oclife');
 
+$l = new \OC_L10N('oclife');
 $ctags = new \OCA\OCLife\hTags();
 
 $JSONtags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_URL);
+$listgrid = filter_input(INPUT_POST, 'listgrid', FILTER_SANITIZE_URL);
 
 // Look for selected tag and child
 $tags = json_decode($JSONtags);
@@ -44,8 +46,18 @@ $filesIDs = \OCA\OCLife\hTags::getFileWithTagArray($tagsToSearch);
 $fileData = \OCA\OCLife\utilities::getFileInfoFromID(OCP\User::getUser(), $filesIDs);
 
 $result = '';
+if($listgrid=="false") {
 foreach($fileData as $file) {
     $result .= \OCA\OCLife\utilities::prepareTile($file);
+}
+}
+else {
+     $result = '<table class="CSSTableGenerator">';
+     $result.='<tr><td style="text-align:left";>'.$l->t('File name').'</td><td colspan="3"></td><td>'.$l->t('Size').'</td><td>'.$l->t('When added').'</td></tr>';
+     foreach($fileData as $file) {
+    $result .= \OCA\OCLife\utilities::prepareTile1($file);
+}
+    $result.='</table>';
 }
 
 echo $result;

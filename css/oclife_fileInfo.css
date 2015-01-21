@@ -20,8 +20,10 @@
 fieldset.oclife_tagsbox {
     border: 1px solid darkgray;
     padding: 0px;
+    min-height: 90px;
 }
 
 .oclife_tagsbox legend {
+   
     margin: 0px 10px 0px 10px;
 }

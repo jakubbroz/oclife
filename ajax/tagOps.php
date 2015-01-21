@@ -71,14 +71,41 @@ $ctags = new \OCA\OCLife\hTags();
 switch($tagOp) {
     case 'new': {
         $tagID = $ctags->newTag($tagLang, $tagName, $parentID);
+        if(is_numeric($tagID)) {
         $permission = $ctags->getTagPermission($tagID);
         $result = TRUE;
-        
+        }
+        else {
+            $result1=$tagID;
+            $result=FALSE;
+        }
         break;
     }
     
     case 'rename': {
         $tagData = array($tagLang => $tagName);
+        
+        $ctags1 = new \OCA\OCLife\hTags();
+        $tagData1 = $ctags1->getAllTags('xx');
+        $searchKey = $tagName;
+        
+        $result1 = 0;
+
+        foreach($tagData1 as $tag) {
+            if($tag['tagid'] !== '-1') {       
+                if(strcmp(strtolower($tag['descr']), strtolower($searchKey))== 0) {
+                    $result1= $tag['descr'];
+                    break;
+                    }         
+                }
+            }
+        
+        if($result1 != 1) {
+            $result= FALSE;
+            break;
+        }
+        
+        
         $result = $ctags->alterTag($tagID, $tagData);
         $permission = $ctags->getTagPermission($tagID);
         
@@ -113,7 +140,7 @@ switch($tagOp) {
 if($result === FALSE) {
     $result = array(
         'result' => 'KO',
-        'title' => '',
+        'title' => $result1,
         'key' => ''
     );
 } else {
