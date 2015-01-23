@@ -292,16 +292,10 @@ $(document).ready(function() {
         });
     });
 
-    $("#fileTable").delegate(
-        ".oclife_tile",
-        "click",
-        function(eventData) {
-            
-        });
        
     $("#fileTable").delegate(
         "#Download",
-        "click",
+        "mousedown",
         function() {
         var filePath = $(this).parent().attr("data-fullPath");
         var spliter=filePath;
@@ -315,11 +309,31 @@ $(document).ready(function() {
         });
         
         
-         $pom1=$("<div id='Download' style='width:100%;background-color:red;position:relative;top:-228px;display:hidden'>"+t('oclife','Download')+"</div>");
-         $pom2=$("<div id='Delete' style='width:100%;background-color:blue;position:relative;top:-228px;display:hidden'>"+t('oclife','Delete tag')+"</div>");        
-         $pom3=$("<div id='Preview' style='width:100%;background-color:purple;position:relative;top:-228px;display:hidden'>"+t('oclife','Preview')+"</div>");        
+         $down=$("<div id='Download' style='width:100%;background-color:red;position:relative;top:-228px;display:hidden'>"+t('oclife','Download')+"</div>");
+         $del=$("<div id='Delete' style='width:100%;background-color:blue;position:relative;top:-228px;display:hidden'>"+t('oclife','Delete tag')+"</div>");        
+         $preview=$("<div id='Preview' style='width:100%;background-color:purple;position:relative;top:-228px;display:hidden'>"+t('oclife','Preview')+"</div>");        
          $pom4=null;
          $pom6=null;
+         
+    function getInternetExplorerVersion(){
+
+    var rv = - 1;
+    if (navigator.appName == 'Microsoft Internet Explorer')
+    {
+        var ua = navigator.userAgent;
+        var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+            rv = parseFloat(RegExp.$1);
+    }
+    else if (navigator.appName == 'Netscape')
+    {
+        var ua = navigator.userAgent;
+        var re = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+            rv = parseFloat(RegExp.$1);
+    }
+    return rv;
+}
             
      $("#fileTable").delegate(
         ".oclife_tile",
@@ -328,19 +342,24 @@ $(document).ready(function() {
             var filePath = $(this).attr("data-fullPath");
             var nesto=filePath.split(".");
             var extension=nesto[nesto.length-1].toLowerCase();
-            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff" || extension=="pdf" || extension=="odt") {              
-               $pom1.appendTo($(this));
-               $pom3.appendTo($(this));
-               $pom2.appendTo($(this));
-               $pom1.show();
-               $pom3.show();
-               $pom2.show();                
-            }  
+            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff" || (extension=="pdf" && getInternetExplorerVersion()==-1))               
+             { 
+                $down[0].innerHTML = t('oclife', 'Download');
+                    $del[0].innerHTML = t('oclife', 'Delete tag');
+                    $preview[0].innerHTML = t('oclife', 'Preview');
+                    $down.appendTo($(this));
+                    $preview.appendTo($(this));
+                    $del.appendTo($(this));
+                    $down.css({"visibility": "visible"});
+                    $del.css({"visibility": "visible"});
+                    $preview.css({"visibility": "visible"});             
+            }
+        
         else {                     
-            $pom1.appendTo($(this));
-            $pom2.appendTo($(this));
-            $pom1.show();
-            $pom2.show();
+            $down.appendTo($(this));
+            $del.appendTo($(this));
+            $down.css({"visibility":"visible"});
+            $del.css({"visibility":"visible"});
         }
         });
         
@@ -348,11 +367,13 @@ $(document).ready(function() {
         ".oclife_tile",
         "mouseout",
         function() {
-            $pom1.hide();
-            $pom2.hide();
-            $pom3.hide();  
+           
+            $down.css({"visibility":"hidden"});
+            $del.css({"visibility":"hidden"});
+            $preview.css({"visibility":"hidden"});
             });
            
+
             
         
         $('#fileTable').delegate(
@@ -398,7 +419,7 @@ $(document).ready(function() {
         
         $('#fileTable').delegate(
         "#Delete",
-        "click",
+        "mousedown",
         function() {
         
         var fileID = $(this).parent().attr("data-fileid");
@@ -580,14 +601,13 @@ $(document).ready(function() {
             }
         }
         
-        
-        $('#fileTable').delegate(
+    $('#fileTable').delegate(
         "#Preview",
-        "click",
+        "mousedown",
         function() {
-            $pom1.hide();
-            $pom2.hide();
-            $pom3.hide();
+            $down.css({"visibility":"hidden"});
+            $del.css({"visibility":"hidden"});
+            $preview.css({"visibility":"hidden"});
             var fileID = $(this).parent().attr("data-fileid");
             var filePath = $(this).parent().attr("data-fullPath");
             var nesto=filePath.split(".");
@@ -596,7 +616,9 @@ $(document).ready(function() {
                 showPreview(filePath);
             }  
             if(extension=="pdf") {
+               
                     showPDFviewerPom("%2F",filePath);
+                
             }
             
         });
@@ -1097,6 +1119,7 @@ function hidePDFviewerPom() {
 	// replace the controls with our own
         $(".oclife_ime").removeClass('hidden');
 	$('#app-content #controls').removeClass('hidden');
+        
 }
 
 function showPDFviewerPom(dir, filename) {
@@ -1104,7 +1127,9 @@ function showPDFviewerPom(dir, filename) {
 		var $iframe;
 		var viewer = OC.linkTo('files_pdfviewer', 'viewer.php')+'?dir='+encodeURIComponent(dir).replace(/%2F/g, '/')+'&file='+encodeURIComponent(filename);
 		$iframe = $('<iframe id="pdframe" style="width:100%;height:100%;display:block;position:absolute;top:0;" src="'+viewer+'" sandbox="allow-scripts allow-same-origin" /><div id="pdfbar"><a id="close" title="Close">X</a></div>');
-		
+		$down.css({"visibility":"hidden"});
+                $del.css({"visibility":"hidden"});
+                $preview.css({"visibility":"hidden"});
                 $('#content').append($iframe).css({height: '100%'});
 		$('body').css({height: '100%'});
                 $('footer').addClass('hidden');

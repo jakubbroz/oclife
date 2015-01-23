@@ -303,7 +303,7 @@ class utilities {
         $n    = count($exts)-1;
         $extension  =strtolower($exts[$n]);
          $l = new \OC_L10N('oclife');
-        if($extension=="jpg" || $extension=="jpeg" || $extension=="png" || $extension=="tiff" || $extension=="pdf" || $extension=="odt") {              
+        if($extension=="jpg" || $extension=="jpeg" || $extension=="png" || $extension=="tiff" || $extension=="pdf") {              
         
             $result.="<td id='download'>".$l->t('Download')."</td><td id='preview'>".$l->t('Preview')."</td><td id='delete'>".$l->t('Delete tag')."</td>";
         }    
