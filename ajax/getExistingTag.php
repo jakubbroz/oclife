@@ -5,9 +5,9 @@
 
 \OCP\JSON::callCheck();
 \OCP\JSON::checkLoggedIn();
-\OCP\JSON::checkAppEnabled('oclife');
+\OCP\JSON::checkAppEnabled('ownTags');
 
-$ctags = new \OCA\OCLife\hTags();
+$ctags = new \OCA\ownTags\hTags();
 $tagData = $ctags->getAllTags('xx');
 
 $searchKey = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);

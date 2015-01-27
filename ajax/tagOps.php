@@ -2,23 +2,23 @@
 /*
  * Copyright 2014 by Francesco PIRANEO G. (fpiraneo@gmail.com)
  * 
- * This file is part of oclife.
+ * This file is part of ownTags.
  * 
- * oclife is free software: you can redistribute it and/or modify
+ * ownTags is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * oclife is distributed in the hope that it will be useful,
+ * ownTags is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with oclife.  If not, see <http://www.gnu.org/licenses/>.
+ * along with ownTags.  If not, see <http://www.gnu.org/licenses/>.
  */
 \OCP\JSON::callCheck();
-\OCP\JSON::checkAppEnabled('oclife');
+\OCP\JSON::checkAppEnabled('ownTags');
 \OCP\User::checkLoggedIn();
 
 // Check for a valid operation to perform
@@ -53,7 +53,7 @@ if($parentID === FALSE || $tagName === FALSE || strlen($tagLang) === 0 || strlen
 
 // For write operations check if tag can be written
 if($tagOp == 'rename' || $tagOp == 'delete') {
-	if(!\OCA\OCLife\hTags::writeAllowed($tagID)) {
+	if(!\OCA\ownTags\hTags::writeAllowed($tagID)) {
 		$result = array(
 			'result' => 'NOTALLOWED',
 			'title' => '',
@@ -65,7 +65,7 @@ if($tagOp == 'rename' || $tagOp == 'delete') {
 }
 
 // Tag handler instance
-$ctags = new \OCA\OCLife\hTags();
+$ctags = new \OCA\ownTags\hTags();
 
 // Switch between possible operations
 switch($tagOp) {
@@ -85,22 +85,23 @@ switch($tagOp) {
     case 'rename': {
         $tagData = array($tagLang => $tagName);
         
-        $ctags1 = new \OCA\OCLife\hTags();
+        $ctags1 = new \OCA\ownTags\hTags();
         $tagData1 = $ctags1->getAllTags('xx');
         $searchKey = $tagName;
-        
+        $cvrc=0;
         $result1 = 0;
 
         foreach($tagData1 as $tag) {
             if($tag['tagid'] !== '-1') {       
                 if(strcmp(strtolower($tag['descr']), strtolower($searchKey))== 0) {
                     $result1= $tag['descr'];
+                    $cvrc=1;
                     break;
                     }         
                 }
             }
         
-        if($result1 != 1) {
+        if($cvrc == 1) {
             $result= FALSE;
             break;
         }

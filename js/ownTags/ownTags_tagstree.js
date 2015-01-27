@@ -21,7 +21,7 @@ $(document).ready(function() {
         },
 
         source: {
-            url: OC.filePath('oclife', 'ajax', 'getTags.php')
+            url: OC.filePath('ownTags', 'ajax', 'getTags.php')
         },
 
         checkbox: true,
@@ -58,7 +58,7 @@ $(document).ready(function() {
             
             
             $.ajax({
-                url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+                url: OC.filePath('ownTags', 'ajax', 'searchFilesFromTags.php'),
 
                 data: {
                     tags: tags,
@@ -68,17 +68,17 @@ $(document).ready(function() {
                 type: "POST",
 
                 success: function( result ) {
-                    $("#oclife_fileList").html(result);
+                    $("#ownTags_fileList").html(result);
 
                     if(result === '') {
-                        $("#oclife_emptylist").css("display", "block");
+                        $("#ownTags_emptylist").css("display", "block");
                     } else {
-                        $("#oclife_emptylist").css("display", "none");
+                        $("#ownTags_emptylist").css("display", "none");
                     }
                 },
 
                 error: function( xhr, status ) {
-                    updateStatusBar(t('oclife', 'Unable to get files list!'));
+                    updateStatusBar(t('ownTags', 'Unable to get files list!'));
                 }
             });
         },
@@ -97,7 +97,7 @@ $(document).ready(function() {
                 data.otherNode.moveTo(node, data.hitMode);
 
                 $.ajax({
-                    url: OC.filePath('oclife', 'ajax', 'changeHierachy.php'),
+                    url: OC.filePath('ownTags', 'ajax', 'changeHierachy.php'),
 
                     data: {
                         movedTag: data.otherNode.key,
@@ -108,14 +108,14 @@ $(document).ready(function() {
 
                     success: function( result ) {
                         if(result === 'OK') {
-                            updateStatusBar(t('oclife', 'Tag moved successfully!'));
+                            updateStatusBar(t('ownTags', 'Tag moved successfully!'));
                         } else {
-                            updateStatusBar(t('oclife', 'Tag not moved! Data base error!'));
+                            updateStatusBar(t('ownTags', 'Tag not moved! Data base error!'));
                         }
                     },
                     
                     error: function( xhr, status ) {
-                        updateStatusBar(t('oclife', 'Tag not moved! Ajax error!'));
+                        updateStatusBar(t('ownTags', 'Tag not moved! Ajax error!'));
                     }
                 });
             }
@@ -187,7 +187,7 @@ $(document).ready(function() {
             }
 
             if(node.key === '-1') {
-                updateStatusBar(t('oclife', 'Editing of Root node not allowed!'));
+                updateStatusBar(t('ownTags', 'Editing of Root node not allowed!'));
                 return;
             }
 
@@ -213,7 +213,7 @@ $(document).ready(function() {
             }
 
             if(node.key === '-1') {
-                updateStatusBar(t('oclife', 'Deleting of Root node not allowed!'));
+                updateStatusBar(t('ownTags', 'Deleting of Root node not allowed!'));
                 return;
             }
             $("#tagToDelete").text(node.title);
@@ -266,7 +266,7 @@ $(document).ready(function() {
         var nodeKey = $("#tagstree").fancytree("getActiveNode").key;
         
         $.ajax({
-            url: OC.filePath('oclife', 'ajax', 'changePriviledge.php'),
+            url: OC.filePath('ownTags', 'ajax', 'changePriviledge.php'),
 
             data: {
                 tagID: nodeKey,
@@ -279,15 +279,15 @@ $(document).ready(function() {
                 var resultData = jQuery.parseJSON(result);
                 
                 if(resultData.result === 'OK') {
-                    updateStatusBar(t('oclife', 'Owner changed successfully!'));
-                } else if(result === 'NOTALLOWED') {
-                    updateStatusBar(t('oclife', 'Owner not changed! Permission denied!'));
+                    updateStatusBar(t('ownTags', 'Owner changed successfully!'));
+                } else if(resultData.result === 'NOTALLOWED') {
+                    updateStatusBar(t('ownTags', 'Owner not changed! Permission denied!'));
                 } else {
-                    updateStatusBar(t('oclife', 'Owner not changed! Data base error!'));
+                    updateStatusBar(t('ownTags', 'Owner not changed! Data base error!'));
                 }
             },
             error: function( xhr, status ) {
-                updateStatusBar(t('oclife', 'Owner not changed! Ajax error!'));
+                updateStatusBar(t('ownTags', 'Owner not changed! Ajax error!'));
             }
         });
     });
@@ -309,9 +309,9 @@ $(document).ready(function() {
         });
         
         
-         $down=$("<div id='Download' style='width:100%;background-color:red;position:relative;top:-228px;display:hidden'>"+t('oclife','Download')+"</div>");
-         $del=$("<div id='Delete' style='width:100%;background-color:blue;position:relative;top:-228px;display:hidden'>"+t('oclife','Delete tag')+"</div>");        
-         $preview=$("<div id='Preview' style='width:100%;background-color:purple;position:relative;top:-228px;display:hidden'>"+t('oclife','Preview')+"</div>");        
+         $down=$("<div id='Download' style='width:100%;background-color:red;position:relative;top:-228px;display:hidden'>"+t('ownTags','Download')+"</div>");
+         $del=$("<div id='Delete' style='width:100%;background-color:blue;position:relative;top:-228px;display:hidden'>"+t('ownTags','Delete tag')+"</div>");        
+         $preview=$("<div id='Preview' style='width:100%;background-color:purple;position:relative;top:-228px;display:hidden'>"+t('ownTags','Preview')+"</div>");        
          $pom4=null;
          $pom6=null;
          
@@ -336,7 +336,7 @@ $(document).ready(function() {
 }
             
      $("#fileTable").delegate(
-        ".oclife_tile",
+        ".ownTags_tile",
         "mouseover",
         function() {
             var filePath = $(this).attr("data-fullPath");
@@ -344,9 +344,9 @@ $(document).ready(function() {
             var extension=nesto[nesto.length-1].toLowerCase();
             if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff" || (extension=="pdf" && getInternetExplorerVersion()==-1))               
              { 
-                $down[0].innerHTML = t('oclife', 'Download');
-                    $del[0].innerHTML = t('oclife', 'Delete tag');
-                    $preview[0].innerHTML = t('oclife', 'Preview');
+                $down[0].innerHTML = t('ownTags', 'Download');
+                    $del[0].innerHTML = t('ownTags', 'Delete tag');
+                    $preview[0].innerHTML = t('ownTags', 'Preview');
                     $down.appendTo($(this));
                     $preview.appendTo($(this));
                     $del.appendTo($(this));
@@ -364,7 +364,7 @@ $(document).ready(function() {
         });
         
        $("#fileTable").delegate(
-        ".oclife_tile",
+        ".ownTags_tile",
         "mouseout",
         function() {
            
@@ -432,7 +432,7 @@ $(document).ready(function() {
         function Nadji(fileID) {
                       
         $.ajax({
-            url: OC.filePath('oclife', 'ajax', 'getTagsForFile.php'),
+            url: OC.filePath('ownTags', 'ajax', 'getTagsForFile.php'),
             async: false,
             timeout: 2000,
 
@@ -456,7 +456,7 @@ $(document).ready(function() {
         },
 
         error: function (xhr, status) {
-            window.alert(t('oclife', 'Unable to get actual tags for this document! Ajax error!'));
+            window.alert(t('ownTags', 'Unable to get actual tags for this document! Ajax error!'));
         },
 
         type: "POST"});
@@ -471,7 +471,7 @@ $(document).ready(function() {
         resizable: false,
         buttons: {
             Confirm: {
-                text: t('oclife', 'Confirm'),
+                text: t('ownTags', 'Confirm'),
                 click: function() {
                     Obrisi();
                    $( this ).dialog( "close" );
@@ -479,7 +479,7 @@ $(document).ready(function() {
             },
 
             Cancel: {
-                text: t('oclife', 'Cancel'),
+                text: t('ownTags', 'Cancel'),
                 click: function() {
                     $( this ).dialog( "close" );
                 }
@@ -506,7 +506,7 @@ $(document).ready(function() {
         var tags = JSON.stringify(selNodesData);
 
         $.ajax({
-            url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+            url: OC.filePath('ownTags', 'ajax', 'searchFilesFromTags.php'),
 
             data: {
                 tags: tags,
@@ -516,17 +516,17 @@ $(document).ready(function() {
             type: "POST",
 
             success: function( result ) {
-                $("#oclife_fileList").html(result);
+                $("#ownTags_fileList").html(result);
 
                 if(result === '') {
-                    $("#oclife_emptylist").css("display", "block");
+                    $("#ownTags_emptylist").css("display", "block");
                 } else {
-                    $("#oclife_emptylist").css("display", "none");
+                    $("#ownTags_emptylist").css("display", "none");
                 }
             },
 
             error: function( xhr, status ) {
-                updateStatusBar(t('oclife', 'Unable to get files list!'));
+                updateStatusBar(t('ownTags', 'Unable to get files list!'));
             }
         });  
 });
@@ -539,7 +539,7 @@ $(document).ready(function() {
                 if($pom5.childNodes[i].childNodes[0].checked==true) {
                     
                     $.ajax({
-                        url: OC.filePath('oclife', 'ajax', 'tagsUpdate.php'),
+                        url: OC.filePath('ownTags', 'ajax', 'tagsUpdate.php'),
                         async: false,
                         timeout: 1000,
 
@@ -564,7 +564,7 @@ $(document).ready(function() {
                                     var tags = JSON.stringify(selNodesData);
 
                                     $.ajax({
-                                        url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+                                        url: OC.filePath('ownTags', 'ajax', 'searchFilesFromTags.php'),
 
                                         data: {
                                             tags: tags,
@@ -574,23 +574,23 @@ $(document).ready(function() {
                                         type: "POST",
 
                                         success: function( result ) {
-                                            $("#oclife_fileList").html(result);
+                                            $("#ownTags_fileList").html(result);
 
                                             if(result === '') {
-                                                $("#oclife_emptylist").css("display", "block");
+                                                $("#ownTags_emptylist").css("display", "block");
                                             } else {
-                                                $("#oclife_emptylist").css("display", "none");
+                                                $("#ownTags_emptylist").css("display", "none");
                                             }
                                         },
 
                                         error: function( xhr, status ) {
-                                            updateStatusBar(t('oclife', 'Unable to get files list!'));
+                                            updateStatusBar(t('ownTags', 'Unable to get files list!'));
                                         }
                                     });  
                         },
 
                         error: function (xhr, status) {
-                            window.alert(t('oclife', 'Unable to add the tag! Ajax error.'));
+                            window.alert(t('ownTags', 'Unable to add the tag! Ajax error.'));
                             $(eventData.relatedTarget).addClass('invalid');
                         },
 
@@ -652,7 +652,7 @@ $(document).ready(function() {
     
     function adjustPriviledge(tagID) {
         $.ajax({
-            url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
+            url: OC.filePath('ownTags', 'ajax', 'tagOps.php'),
             async: false,
             timeout: 2000,
 
@@ -702,12 +702,12 @@ $(document).ready(function() {
                         $("#menuAllPriv").val("AllRO");
                     }
                 } else {
-                    updateStatusBar(t('oclife', 'Unable to get info! Data base error!'));
+                    updateStatusBar(t('ownTags', 'Unable to get info! Data base error!'));
                 }
             },
 
             error: function( xhr, status ) {
-                updateStatusBar(t('oclife', 'Unable to get info! Ajax error!'));
+                updateStatusBar(t('ownTags', 'Unable to get info! Ajax error!'));
             }                            
         });
     }
@@ -719,7 +719,7 @@ $(document).ready(function() {
         var prevHeight = 660;
         var dialogTop =  (maskHeight  - prevHeight) / 2;  
         var dialogLeft = (maskWidth - prevWidth) / 2; 
-        var thumbPath = OC.filePath("oclife", "", "getPreview.php") + "?filePath=" + encodeURIComponent(filePath);
+        var thumbPath = OC.filePath("ownTags", "", "getPreview.php") + "?filePath=" + encodeURIComponent(filePath);
 
         $("#imagePreview").dialog("open");
         $("#previewArea").attr("src", thumbPath);
@@ -740,19 +740,19 @@ $(document).ready(function() {
         var allPriv = nodeClass.substring(4,6);
 
         if(ownPriv === 'r-' && grpPriv === '--' && allPriv === '--') {
-            iconCSS = "URL(" + OC.filePath('oclife', 'img', 'fancytree/icon_person_red.png') + ")";
+            iconCSS = "URL(" + OC.filePath('ownTags', 'img', 'fancytree/icon_person_red.png') + ")";
         } else if(ownPriv === 'rw' && grpPriv === '--' && allPriv === '--') {
-            iconCSS = "URL(" + OC.filePath('oclife', 'img', 'fancytree/icon_person_green.png') + ")";
+            iconCSS = "URL(" + OC.filePath('ownTags', 'img', 'fancytree/icon_person_green.png') + ")";
         } else if(grpPriv === 'r-' && allPriv === '--') {
-            iconCSS = "URL(" + OC.filePath('oclife', 'img', 'fancytree/icon_group_red.png') + ")";
+            iconCSS = "URL(" + OC.filePath('ownTags', 'img', 'fancytree/icon_group_red.png') + ")";
         } else if(grpPriv === 'rw' && allPriv === '--') {
-            iconCSS = "URL(" + OC.filePath('oclife', 'img', 'fancytree/icon_group_green.png') + ")";
+            iconCSS = "URL(" + OC.filePath('ownTags', 'img', 'fancytree/icon_group_green.png') + ")";
         } else if(allPriv === 'r-') {
-            iconCSS = "URL(" + OC.filePath('oclife', 'img', 'fancytree/icon_globe_red.png') + ")";
+            iconCSS = "URL(" + OC.filePath('ownTags', 'img', 'fancytree/icon_globe_red.png') + ")";
         } else if(allPriv === 'rw') {
-            iconCSS = "URL(" + OC.filePath('oclife', 'img', 'fancytree/icon_globe_green.png') + ")";
+            iconCSS = "URL(" + OC.filePath('ownTags', 'img', 'fancytree/icon_globe_green.png') + ")";
         } else {
-            iconCSS = "URL(" + OC.filePath('oclife', 'img', 'fancytree/icon_invalid.png') + ")";
+            iconCSS = "URL(" + OC.filePath('ownTags', 'img', 'fancytree/icon_invalid.png') + ")";
         }
 
         return iconCSS;
@@ -792,14 +792,14 @@ $(document).ready(function() {
         resizable: false,
         buttons: {
             Confirm: {
-                text: t('oclife', 'Confirm'),
+                text: t('ownTags', 'Confirm'),
                 click: function() {
                     renameTag();
                 }
             },
 
             Cancel: {
-                text: t('oclife', 'Cancel'),
+                text: t('ownTags', 'Cancel'),
                 click: function() {
                     $( this ).dialog( "close" );
                 }
@@ -834,7 +834,7 @@ $(document).ready(function() {
             var tagToMod = document.getElementById("tagID").value;
            
             $.ajax({
-                url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
+                url: OC.filePath('ownTags', 'ajax', 'tagOps.php'),
                 async: false,
                 timeout: 2000,
 
@@ -862,16 +862,16 @@ $(document).ready(function() {
                         var newNode = parentNode.addChildren(nodeData);
                         newNode.setActive(true);
 
-                        updateStatusBar(t('oclife', 'Rename done!'));
+                        updateStatusBar(t('ownTags', 'Rename done!'));
                     } else if(resultData.result === 'NOTALLOWED' ) {
-			updateStatusBar(t('oclife', 'Unable to rename! Permission denied!'));
+			updateStatusBar(t('ownTags', 'Unable to rename! Permission denied!'));
 		    } else {
-                        updateStatusBar(t('oclife', 'Tag')+" \""+resultData.title+"\" "+t('oclife', 'already exists'));
+                        updateStatusBar(t('ownTags', 'Tag')+" \""+resultData.title+"\" "+t('ownTags', 'already exists'));
                    }
                 },
 
                 error: function( xhr, status ) {
-                    updateStatusBar(t('oclife', 'Unable to rename! Ajax error!'));
+                    updateStatusBar(t('ownTags', 'Unable to rename! Ajax error!'));
                 }
             });                        
 
@@ -887,14 +887,14 @@ $(document).ready(function() {
         resizable: false,
         buttons: {
             Confirm: {
-                text: t('oclife', 'Confirm'),
+                text: t('ownTags', 'Confirm'),
                 click: function() {
                     insertTag();
                 }
             },
 
             Cancel: {
-                text: t('oclife', 'Cancel'),
+                text: t('ownTags', 'Cancel'),
                 click: function() {
                     $( this ).dialog( "close" );
                 }
@@ -927,7 +927,7 @@ $(document).ready(function() {
             var parent = document.getElementById("parentID").value;
 
             $.ajax({
-                url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
+                url: OC.filePath('ownTags', 'ajax', 'tagOps.php'),
                 async: false,
                 timeout: 2000,
 
@@ -954,14 +954,14 @@ $(document).ready(function() {
                         node.setExpanded(true);
                         newNode.setActive(true);
 
-                        updateStatusBar(t('oclife', 'Tag created successfully!'));
+                        updateStatusBar(t('ownTags', 'Tag created successfully!'));
                     } else {
-                        updateStatusBar(t('oclife', 'Tag')+" \""+resArray.title+"\" "+t('oclife', 'already exists'));
+                        updateStatusBar(t('ownTags', 'Tag')+" \""+resArray.title+"\" "+t('ownTags', 'already exists'));
                     }
                 },
 
                 error: function( xhr, status ) {
-                    updateStatusBar(t('oclife', 'Unable to create tag! Ajax error!'));
+                    updateStatusBar(t('ownTags', 'Unable to create tag! Ajax error!'));
                 }
             });                        
 
@@ -977,30 +977,30 @@ $(document).ready(function() {
         modal: true,
         buttons: {
             Cancel: {
-                text: t('oclife', 'Cancel'),
+                text: t('ownTags', 'Cancel'),
                 click: function() {
                     $( this ).dialog( "close" );
-                    updateStatusBar(t('oclife', 'Operation canceled: No deletion occurred!'));
+                    updateStatusBar(t('ownTags', 'Operation canceled: No deletion occurred!'));
                 }
             },
 
             Delete: {
                 
               
-                text: t('oclife', 'Delete'),
+                text: t('ownTags', 'Delete'),
                 click: function() {
                     $( this ).dialog( "close" );
-                    //updateStatusBar(t('oclife', 'dada'));
+                    //updateStatusBar(t('ownTags', 'dada'));
                    // var tagID = deleteID.value;
                     var tagID = document.getElementById('deleteID').value;
 
                     if(tagID === "-1") {
-                        updateStatusBar(t('oclife', 'Invalid tag number! Nothing done!'));
+                        updateStatusBar(t('ownTags', 'Invalid tag number! Nothing done!'));
                         return;
                     }
 
                     $.ajax({
-                        url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
+                        url: OC.filePath('ownTags', 'ajax', 'tagOps.php'),
                         async: false,
                         timeout: 2000,
 
@@ -1019,15 +1019,15 @@ $(document).ready(function() {
 
                             if(resArray.result === 'OK') {
                                 $("#tagstree").fancytree("getActiveNode").remove();
-                                updateStatusBar(t('oclife', 'Tag removed successfully!'));
+                                updateStatusBar(t('ownTags', 'Tag removed successfully!'));
 			    } else if (resArray.result === 'NOTALLOWED') {
-				updateStatusBar(t('oclife', 'Tag not removed! Permission denied'));
+				updateStatusBar(t('ownTags', 'Tag not removed! Permission denied'));
                             } else {
-                                updateStatusBar(t('oclife', 'Tag not removed! Data base error!'));
+                                updateStatusBar(t('ownTags', 'Tag not removed! Data base error!'));
                             }
                         },
                         error: function( xhr, status ) {
-                            updateStatusBar(t('oclife', 'Tags not removed! Ajax error!'));
+                            updateStatusBar(t('ownTags', 'Tags not removed! Ajax error!'));
                         }
                     });
                 }
@@ -1037,7 +1037,7 @@ $(document).ready(function() {
 
     function changePriviledge(nodeKey, priviledge) {
         $.ajax({
-            url: OC.filePath('oclife', 'ajax', 'changePriviledge.php'),
+            url: OC.filePath('ownTags', 'ajax', 'changePriviledge.php'),
 
             data: {
                 tagID: nodeKey,
@@ -1059,15 +1059,15 @@ $(document).ready(function() {
                     findResult.css("backgroundPosition", "0 0");
 
 
-                    updateStatusBar(t('oclife', 'Priviledge changed successfully!'));
+                    updateStatusBar(t('ownTags', 'Priviledge changed successfully!'));
                 } else if(result === 'NOTALLOWED') {
-                    updateStatusBar(t('oclife', 'Priviledge not changed! Permission denied!'));
+                    updateStatusBar(t('ownTags', 'Priviledge not changed! Permission denied!'));
                 } else {
-                    updateStatusBar(t('oclife', 'Priviledge not changed! Data base error!'));
+                    updateStatusBar(t('ownTags', 'Priviledge not changed! Data base error!'));
                 }
             },
             error: function( xhr, status ) {
-                updateStatusBar(t('oclife', 'Priviledge not changed! Ajax error!'));
+                updateStatusBar(t('ownTags', 'Priviledge not changed! Ajax error!'));
             }
         });
     }
@@ -1117,7 +1117,7 @@ function hidePDFviewerPom() {
 	}
 	//FileList.setViewerMode(false);
 	// replace the controls with our own
-        $(".oclife_ime").removeClass('hidden');
+        $(".ownTags_ime").removeClass('hidden');
 	$('#app-content #controls').removeClass('hidden');
         
 }
@@ -1137,13 +1137,13 @@ function showPDFviewerPom(dir, filename) {
 		$('.directLink').addClass('hidden');
 		$('.directDownload').addClass('hidden');
 		$('#controls').addClass('hidden');
-		$(".oclife_ime").addClass('hidden');
+		$(".ownTags_ime").addClass('hidden');
 		$("#pageWidthOption").attr("selected","selected");
 		// replace the controls with our own
 		$('#app-content #controls').addClass('hidden');
 		$('#pdfbar').css({position:'absolute',top:'6px',right:'5px'});
 		$('#close').css({display:'block',padding:'0 5px',color:'#BBBBBB','font-weight':'900','font-size':'16px',height:'18px',background:'transparent'}).click(function(){
-                    $(".oclife_ime").removeClass('hidden');
+                    $(".ownTags_ime").removeClass('hidden');
                     hidePDFviewerPom();
 			});		
 	}

@@ -1,7 +1,7 @@
 $(function() {
-    $( "#oclife_settings" )
+    $( "#ownTags_settings" )
         .click(function() {
-            var dataPath = OC.filePath('oclife', 'ajax', 'savePrefs.php');
+            var dataPath = OC.filePath('ownTags', 'ajax', 'savePrefs.php');
             var v_useImageMagick = $('#useImageMagick').is(":checked");
             
             $.ajax({
@@ -17,7 +17,7 @@ $(function() {
 
                 success: function( result ) {
                     if(result !== 'OK') {
-                        window.alert(t('oclife', 'Settings not saved! Data base error!'))
+                        window.alert(t('ownTags', 'Settings not saved! Data base error!'))
                     }
                 },
 

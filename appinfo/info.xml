@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <info>
-	<id>oclife</id>
+	<id>ownTags</id>
 	<name>ownTags</name>
 	<description>
 		Add and manage hierarchical tags to your documents.
@@ -14,4 +14,3 @@
 	<require>6</require>
 	<shipped>true</shipped>
 </info>
-

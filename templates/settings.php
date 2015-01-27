@@ -1,6 +1,6 @@
 <?php
 // Handle translations
-$l = new \OC_L10N('oclife');
+$l = new \OC_L10N('ownTags');
 ?>
 
 <?php
@@ -11,7 +11,7 @@ $l = new \OC_L10N('oclife');
     }
 ?>
 
-<form id="oclife_settings">
+<form id="ownTags_settings">
     <fieldset class="personalblock">
         <h2>Tags</h2>
         <div>
