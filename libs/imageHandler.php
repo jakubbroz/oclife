@@ -2,20 +2,20 @@
 /*
  * Copyright 2014 by Francesco PIRANEO G. (fpiraneo@gmail.com)
  * 
- * This file is part of ownTags.
+ * This file is part of oclife.
  * 
- * ownTags is free software: you can redistribute it and/or modify
+ * oclife is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * ownTags is distributed in the hope that it will be useful,
+ * oclife is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with ownTags.  If not, see <http://www.gnu.org/licenses/>.
+ * along with oclife.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -24,7 +24,7 @@
  * The only constraint is the presence of 'tags' field.
  */
 
-namespace OCA\ownTags;
+namespace OCA\oclife;
 class ImageHandler {
     private $handableImageType;
     private $width;
@@ -39,7 +39,7 @@ class ImageHandler {
      */
     function __construct() {
         // Check if ImageMagick is enabled; use standard GD otherwise
-        $useImageMagick = intval(\OCP\Config::getAppValue('ownTags', 'useImageMagick'));
+        $useImageMagick = intval(\OCP\Config::getAppValue('oclife', 'useImageMagick'));
         $this->imagick = extension_loaded('imagick') && $useImageMagick === 1;
         
         if($this->imagick) {
@@ -360,7 +360,7 @@ class ImageHandler {
         // Get number of images and choose the best for the resolution of the thumbnail
         //$imgsNumber = $imageHandler->getnumberimages();
         $imageInfo = $imageHandler->getImageProperties();
-        $orientation = \OCA\ownTags\ImageHandler::getRotation($imageInfo['exif:Orientation']);
+        $orientation = \OCA\oclife\ImageHandler::getRotation($imageInfo['exif:Orientation']);
         $imageHandler->setiteratorindex(0);
         $imageHandler->rotateImage($this->htmlBgColor, $orientation); 
         

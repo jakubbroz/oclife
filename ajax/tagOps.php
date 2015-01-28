@@ -2,23 +2,23 @@
 /*
  * Copyright 2014 by Francesco PIRANEO G. (fpiraneo@gmail.com)
  * 
- * This file is part of ownTags.
+ * This file is part of oclife.
  * 
- * ownTags is free software: you can redistribute it and/or modify
+ * oclife is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * ownTags is distributed in the hope that it will be useful,
+ * oclife is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with ownTags.  If not, see <http://www.gnu.org/licenses/>.
+ * along with oclife.  If not, see <http://www.gnu.org/licenses/>.
  */
 \OCP\JSON::callCheck();
-\OCP\JSON::checkAppEnabled('ownTags');
+\OCP\JSON::checkAppEnabled('oclife');
 \OCP\User::checkLoggedIn();
 
 // Check for a valid operation to perform
@@ -53,7 +53,7 @@ if($parentID === FALSE || $tagName === FALSE || strlen($tagLang) === 0 || strlen
 
 // For write operations check if tag can be written
 if($tagOp == 'rename' || $tagOp == 'delete') {
-	if(!\OCA\ownTags\hTags::writeAllowed($tagID)) {
+	if(!\OCA\oclife\hTags::writeAllowed($tagID)) {
 		$result = array(
 			'result' => 'NOTALLOWED',
 			'title' => '',
@@ -65,7 +65,7 @@ if($tagOp == 'rename' || $tagOp == 'delete') {
 }
 
 // Tag handler instance
-$ctags = new \OCA\ownTags\hTags();
+$ctags = new \OCA\oclife\hTags();
 
 // Switch between possible operations
 switch($tagOp) {
@@ -85,7 +85,7 @@ switch($tagOp) {
     case 'rename': {
         $tagData = array($tagLang => $tagName);
         
-        $ctags1 = new \OCA\ownTags\hTags();
+        $ctags1 = new \OCA\oclife\hTags();
         $tagData1 = $ctags1->getAllTags('xx');
         $searchKey = $tagName;
         $cvrc=0;

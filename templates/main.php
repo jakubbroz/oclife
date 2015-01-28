@@ -1,12 +1,12 @@
 <?php
 // Handle translations
-$l = new \OC_L10N('ownTags');
+$l = new \OC_L10N('oclife');
 ?>
 
 <div id="notification" style="display:none;"></div>
 
-<div class='ownTags_toolbar'>
-    <span class="ownTags_header">
+<div class='oclife_toolbar'>
+    <span class="oclife_header">
         <?php p($l->t('Actual tags')) ?>
     </span>
 
@@ -21,7 +21,7 @@ $l = new \OC_L10N('ownTags');
         <option value='' disabled='disabled' selected='selected'><?php p($l->t('Not set')) ?></option>
         
         <?php
-            $usersList = \OCA\ownTags\utilities::getUsers(NULL, TRUE);
+            $usersList = \OCA\oclife\utilities::getUsers(NULL, TRUE);
             foreach($usersList as $uid => $userName) {
                 printf("<option value='%s'>%s</option>'", $uid, is_null($userName) ? $uid : $userName);
             }
@@ -110,15 +110,15 @@ $l = new \OC_L10N('ownTags');
     </div>
 </div>
 
-<div data-layout='{"type": "border", "hgap": 5, "vgap": 3}' class="ownTags_content" id="ownTags_content">
+<div data-layout='{"type": "border", "hgap": 5, "vgap": 3}' class="oclife_content" id="oclife_content">
     <div class="west" id="tagscontainer">
-        <div class="ownTags_tagtree" id="tagstree">
+        <div class="oclife_tagtree" id="tagstree">
         </div>
     </div>
     
     <div class="center" id="fileTable">
-        <p class="ownTags_title"><?php p($l->t('Associated files')) ?></p>
-        <div id="ownTags_fileList"></div>
-        <div id="ownTags_emptylist"><?php p($l->t('Select one or more tags to view the associated files.')) ?></div>
+        <p class="oclife_title"><?php p($l->t('Associated files')) ?></p>
+        <div id="oclife_fileList"></div>
+        <div id="oclife_emptylist"><?php p($l->t('Select one or more tags to view the associated files.')) ?></div>
     </div>
 </div>

@@ -2,23 +2,23 @@
 /*
  * Copyright 2014 by Francesco PIRANEO G. (fpiraneo@gmail.com)
  * 
- * This file is part of ownTags.
+ * This file is part of oclife.
  * 
- * ownTags is free software: you can redistribute it and/or modify
+ * oclife is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * ownTags is distributed in the hope that it will be useful,
+ * oclife is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with ownTags.  If not, see <http://www.gnu.org/licenses/>.
+ * along with oclife.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\ownTags;
+namespace OCA\oclife;
 
 
 
@@ -55,13 +55,13 @@ class utilities {
     public static function cleanupForDelete($params) {
         // Get full thumbnail path
         $path = $params['path'];
-        \OCA\ownTags\utilities::deleteThumb($path);
+        \OCA\oclife\utilities::deleteThumb($path);
 
         // Now remove all entry in DB for this file
         // -- Verificare che qui esista l'entry del file nel DB!!! :-///
         $fileInfos = \OC\Files\Filesystem::getFileInfo($path);
         if($fileInfos['fileid']) {
-            $result = \OCA\ownTags\hTags::removeAllTagsForFile($fileInfos['fileid']);
+            $result = \OCA\oclife\hTags::removeAllTagsForFile($fileInfos['fileid']);
         }
         return $result;
     }
@@ -72,7 +72,7 @@ class utilities {
      */
     public static function cleanupForRename($params) {
         $oldPath = $params['oldpath'];
-        \OCA\ownTags\utilities::deleteThumb($oldPath);
+        \OCA\oclife\utilities::deleteThumb($oldPath);
         return TRUE;
     }
 
@@ -84,7 +84,7 @@ class utilities {
         // Get full thumbnail path
         $fileInfo = pathinfo($thumbPath);
         $user = \OCP\USER::getUser();
-        $previewDir = \OC_User::getHome($user) . '/ownTags/previews/' . $user;
+        $previewDir = \OC_User::getHome($user) . '/oclife/previews/' . $user;
         $fullThumbPath = $previewDir . $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.png';
         
         // If thumbnail exists remove it
@@ -106,10 +106,10 @@ class utilities {
         $oc_version = $_SESSION['OC_Version'][0];
         
         if($oc_version === 7) {
-            $myres = \OCA\ownTags\utilities::getOC7FileList($user, $path, $onlyID, $indexed);
+            $myres = \OCA\oclife\utilities::getOC7FileList($user, $path, $onlyID, $indexed);
             return $myres;
         } else {
-            return \OCA\ownTags\utilities::getOC6FileList($user, $path, $onlyID, $indexed);            
+            return \OCA\oclife\utilities::getOC6FileList($user, $path, $onlyID, $indexed);            
         }
     }
     
@@ -140,7 +140,7 @@ class utilities {
                     $itemPath = 'files/' . $item['name'];
                 }
 
-                $itemRes = \OCA\ownTags\utilities::getOC6FileList($user, $itemPath, $onlyID, $indexed);
+                $itemRes = \OCA\oclife\utilities::getOC6FileList($user, $itemPath, $onlyID, $indexed);
             }            
             
             foreach($itemRes as $item) {
@@ -189,7 +189,7 @@ class utilities {
                         
                 $itemRes[] = ($onlyID) ? $fileID : $fileData;
             } else {
-                $itemRes = \OCA\ownTags\utilities::getOC7FileList($user, $filePath, $onlyID, $indexed);
+                $itemRes = \OCA\oclife\utilities::getOC7FileList($user, $filePath, $onlyID, $indexed);
             }            
             
             foreach($itemRes as $item) {
@@ -247,8 +247,8 @@ class utilities {
         $pathInfo = substr(pathinfo($fileData['path'], PATHINFO_DIRNAME), 6);
         $filePath = strpos($fileData['path'], 'files') === FALSE ? $fileData['path'] : substr($fileData['path'], 5);
         
-        $result = '<div class="ownTags_tile" data-fileid="' . $fileData['fileid'] . '" data-filePath="' . $pathInfo . '" data-fullPath="' . $filePath . '">';
-        $result .= '<div class="ownTags_ime">' . $fileData['name'] . '</div>';
+        $result = '<div class="oclife_tile" data-fileid="' . $fileData['fileid'] . '" data-filePath="' . $pathInfo . '" data-fullPath="' . $filePath . '">';
+        $result .= '<div class="oclife_ime">' . $fileData['name'] . '</div>';
         
         $exts = split("[/\\.]", $fileData['name']);
         $n    = count($exts)-1;
@@ -256,27 +256,27 @@ class utilities {
              
 
              if(strcmp($ext,"pdf")==0) {              
-                  $thumbPath=  \OCP\Util::linkToAbsolute('/apps/ownTags', '/img/PDFLogo.jpg');
+                  $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/PDFLogo.jpg');
             }
             else if(strcmp($ext,"xls")==0) {
-               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/ownTags', '/img/xls.png');}
+               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/xls.png');}
             else if(strcmp($ext,"mp3")==0 || strcmp($ext,"audio")==0 || strcmp($ext,"wav")==0 || strcmp($ext,"aac")==0 || strcmp($ext,"wma")==0){
-               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/ownTags', '/img/music.jpg'); 
+               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/music.jpg'); 
             }
             else if(strcmp($ext,"odt")==0 || strcmp($ext,"doc")==0 || strcmp($ext,"docx")==0 || strcmp($ext,"srt")==0 || strcmp($ext,"txt")==0 || strcmp($ext,"asa")==0) {
-                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/ownTags', '/img/text.png');
+                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/text.png');
             }
             else if(strcmp($ext,"mp4")==0 || strcmp($ext,"avi")==0 || strcmp($ext,"flv")==0 || strcmp($ext,"mpeg")==0 || strcmp($ext,"m4v")==0 || strcmp($ext,"mkv")==0) {
-                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/ownTags', '/img/video.png');
+                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/video.png');
             }
             else if(strcmp($ext,"ppt")==0) {
-                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/ownTags', '/img/presentacion.jpg');
+                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/presentacion.jpg');
             }
             else if(strcmp($ext,"zip")==0 || strcmp($ext,"7z")==0 || strcmp($ext,"rar")==0 || strcmp($ext,"tar.gz")==0 || strcmp($ext,"tar")==0) {
-                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/ownTags', '/img/zip.jpg');
+                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/zip.jpg');
             }
             else {
-            $thumbPath = \OCP\Util::linkToAbsolute('ownTags', 'getThumbnail.php', array('filePath' => $filePath));
+            $thumbPath = \OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
             }
         
         
@@ -289,7 +289,7 @@ class utilities {
     public static function prepareTile1($fileData) {
        
         $name=$fileData['name'];
-        $size=\OCA\ownTags\utilities::formatBytes($fileData['size'], 2, TRUE);
+        $size=\OCA\oclife\utilities::formatBytes($fileData['size'], 2, TRUE);
         $date=date('d/m/Y H:i:s', $fileData['date']);
         
          
@@ -302,7 +302,7 @@ class utilities {
         $exts = split("[/\\.]", $fileData['name']);
         $n    = count($exts)-1;
         $extension  =strtolower($exts[$n]);
-         $l = new \OC_L10N('ownTags');
+         $l = new \OC_L10N('oclife');
         if($extension=="jpg" || $extension=="jpeg" || $extension=="png" || $extension=="tiff" || $extension=="pdf") {              
         
             $result.="<td id='download'>".$l->t('Download')."</td><td id='preview'>".$l->t('Preview')."</td><td id='delete'>".$l->t('Delete tag')."</td>";

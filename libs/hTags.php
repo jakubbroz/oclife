@@ -2,20 +2,20 @@
 /*
  * Copyright 2014 by Francesco PIRANEO G. (fpiraneo@gmail.com)
  *
- * This file is part of ownTags.
+ * This file is part of oclife.
  *
- * ownTags is free software: you can redistribute it and/or modify
+ * oclife is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * ownTags is distributed in the hope that it will be useful,
+ * oclife is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ownTags.  If not, see <http://www.gnu.org/licenses/>.
+ * along with oclife.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -23,7 +23,7 @@
  *
  * @author fpiraneo
  */
-namespace OCA\ownTags;
+namespace OCA\oclife;
 class hTags {
     /**
      * Returns the tag ID of an existing tag
@@ -34,7 +34,7 @@ class hTags {
         $result = array();
 
         // *PREFIX* is being replaced with the ownCloud installation prefix
-        $sql = "SELECT `tagid` FROM `*PREFIX*ownTags_humanReadable` WHERE `lang`=? AND `descr`=?";
+        $sql = "SELECT `tagid` FROM `*PREFIX*oclife_humanReadable` WHERE `lang`=? AND `descr`=?";
         $args = array($tagLang, $tagDescr);
 
         $query = \OCP\DB::prepare($sql);
@@ -56,7 +56,7 @@ class hTags {
         $result = array();
 
         // *PREFIX* is being replaced with the ownCloud installation prefix
-        $sql = "SELECT `lang`, `descr` FROM `*PREFIX*ownTags_humanReadable` WHERE `tagid`=?";
+        $sql = "SELECT `lang`, `descr` FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=?";
         $args = array($tagID);
 
         $query = \OCP\DB::prepare($sql);
@@ -84,7 +84,7 @@ class hTags {
         }
 	
         // Check if tag already exists
-         $ctags = new \OCA\ownTags\hTags();
+         $ctags = new \OCA\oclife\hTags();
         $tagData = $ctags->getAllTags('xx');
         $searchKey = $tagDescr;
         
@@ -112,7 +112,7 @@ class hTags {
         $result = array();
 
         // Insert master record
-        $sql = "INSERT INTO `*PREFIX*ownTags_tags` (`parent`, `owner`, `permission`) VALUES (?,?,?)";
+        $sql = "INSERT INTO `*PREFIX*oclife_tags` (`parent`, `owner`, `permission`) VALUES (?,?,?)";
         $args = array($parentID, $owner, $permission);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
@@ -122,7 +122,7 @@ class hTags {
 
         // Insert human readable
         $args = array($newIndex, strtolower($tagLang), trim($tagDescr));
-        $sql = "INSERT INTO `*PREFIX*ownTags_humanReadable` (`tagid`, `lang`, `descr`) VALUES (?,?,?)";
+        $sql = "INSERT INTO `*PREFIX*oclife_humanReadable` (`tagid`, `lang`, `descr`) VALUES (?,?,?)";
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
 
@@ -143,7 +143,7 @@ class hTags {
         }
 
 	// Check if we can alter this tag
-	if(!\OCA\ownTags\hTags::writeAllowed($tagId)) {
+	if(!\OCA\oclife\hTags::writeAllowed($tagId)) {
 		return FALSE;
 	}
 
@@ -157,14 +157,14 @@ class hTags {
 
             // Check if we have to delete some data
             if($tagDescr === '') {
-                $sql = 'DELETE FROM `*PREFIX*ownTags_humanReadable` WHERE `tagid`=? AND `lang`=?';
+                $sql = 'DELETE FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=? AND `lang`=?';
                 $args = array($tagId, $tagLangToInsert);
 
                 $query = \OCP\DB::prepare($sql);
                 $resRsrc = $query->execute($args);
             } else {
                 // We have to insert or modify
-                $sql = 'SELECT `descr` FROM `*PREFIX*ownTags_humanReadable` WHERE `tagid`=? AND `lang`=?';
+                $sql = 'SELECT `descr` FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=? AND `lang`=?';
                 $args = array($tagId, $tagLangToInsert);
 
                 $query = \OCP\DB::prepare($sql);
@@ -174,13 +174,13 @@ class hTags {
 
                 if(isset($dataRow['descr'])) {
                     // Perform an update
-                    $sql = 'UPDATE `*PREFIX*ownTags_humanReadable` SET `descr`=? WHERE `tagid`=? and `lang`=?';
+                    $sql = 'UPDATE `*PREFIX*oclife_humanReadable` SET `descr`=? WHERE `tagid`=? and `lang`=?';
                     $args = array($tagDescrToInsert, $tagId, $tagLangToInsert);
                     $query = \OCP\DB::prepare($sql);
                     $resRsrc = $query->execute($args);
                 } else {
                     // Perform an insertion
-                    $sql = 'INSERT INTO `*PREFIX*ownTags_humanReadable` (`tagid`, `lang`, `descr`) VALUES (?,?,?)';
+                    $sql = 'INSERT INTO `*PREFIX*oclife_humanReadable` (`tagid`, `lang`, `descr`) VALUES (?,?,?)';
                     $args = array($tagId, $tagLangToInsert, $tagDescrToInsert);
                     $query = \OCP\DB::prepare($sql);
                     $resRsrc = $query->execute($args);
@@ -199,13 +199,13 @@ class hTags {
         $result = array();
 
         // *PREFIX* is being replaced with the ownCloud installation prefix
-        $sql = "SELECT * FROM `*PREFIX*ownTags_humanReadable` WHERE `lang`=? ORDER BY `tagid`";
+        $sql = "SELECT * FROM `*PREFIX*oclife_humanReadable` WHERE `lang`=? ORDER BY `tagid`";
         $args = array($tagLang);
 
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
         while($row = $resRsrc->fetchRow()) {
-            if(\OCA\ownTags\hTags::readAllowed($row['tagid'])) {
+            if(\OCA\oclife\hTags::readAllowed($row['tagid'])) {
                 $result[] = $row;
             }
         }
@@ -223,13 +223,13 @@ class hTags {
         $result = array();
 
         // *PREFIX* is being replaced with the ownCloud installation prefix
-        $sql = "SELECT * FROM `*PREFIX*ownTags_humanReadable` WHERE `lang`=? and `descr` LIKE ?%";
+        $sql = "SELECT * FROM `*PREFIX*oclife_humanReadable` WHERE `lang`=? and `descr` LIKE ?%";
         $args = array($tagLang, $startTag);
 
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
         while($row = $resRsrc->fetchRow()) {
-            if(\OCA\ownTags\hTags::readAllowed($row['tagid'])) {
+            if(\OCA\oclife\hTags::readAllowed($row['tagid'])) {
                 $result[] = $row;
             }
         }
@@ -259,13 +259,13 @@ class hTags {
             );
 
         // Get all tags with no parent
-        $sql = 'SELECT `id` FROM `*PREFIX*ownTags_tags` WHERE `parent`=-1 ORDER BY `id`';
+        $sql = 'SELECT `id` FROM `*PREFIX*oclife_tags` WHERE `parent`=-1 ORDER BY `id`';
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute();
 
         $ids = array();
         while($row = $resRsrc->fetchRow()) {
-            if(\OCA\ownTags\hTags::readAllowed($row['id'])) {
+            if(\OCA\oclife\hTags::readAllowed($row['id'])) {
                 $ids[] = intval($row['id']);
             }
         }
@@ -290,23 +290,23 @@ class hTags {
         }
 
         // Retrieve tag data
-        $sql = 'SELECT * FROM `*PREFIX*ownTags_tags` WHERE `id`=?';
+        $sql = 'SELECT * FROM `*PREFIX*oclife_tags` WHERE `id`=?';
         $args = array($ID);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
         
         $tagPermission = 'r-----';
         while($row = $resRsrc->fetchRow()) {
-            $tagPermission = \OCA\ownTags\hTags::getPermission($row['permission']);
+            $tagPermission = \OCA\oclife\hTags::getPermission($row['permission']);
         }
 
-        $sql = 'SELECT * FROM `*PREFIX*ownTags_humanReadable` WHERE `tagid`=? AND `lang`=?';
+        $sql = 'SELECT * FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=? AND `lang`=?';
         $args = array($ID, $lang);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
 
         while($row = $resRsrc->fetchRow()) {
-            if(\OCA\ownTags\hTags::readAllowed($row['tagid'])) {
+            if(\OCA\oclife\hTags::readAllowed($row['tagid'])) {
                 $result['key'] = $row['tagid'];
                 $result['title'] = $row['descr'];
                 $result['permission'] = $tagPermission;
@@ -317,13 +317,13 @@ class hTags {
 
         // Fetch all childs ids if any
         $childsIDs = array();
-        $sql = 'SELECT `id` FROM `*PREFIX*ownTags_tags` WHERE `parent`=?';
+        $sql = 'SELECT `id` FROM `*PREFIX*oclife_tags` WHERE `parent`=?';
         $args = array($ID);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
 
         while($row = $resRsrc->fetchRow()) {
-            if(\OCA\ownTags\hTags::readAllowed($row['id'])) {
+            if(\OCA\oclife\hTags::readAllowed($row['id'])) {
                 $childsIDs[] = $row['id'];
             }
         }
@@ -349,7 +349,7 @@ class hTags {
     public function setTagParent($tag, $parent, $lang='xx') {
         // Verify for right parent
         if($parent !== '') {
-            $sql = 'SELECT `tagid` FROM `*PREFIX*ownTags_humanReadable` WHERE `lang`=? AND `descr`=?';
+            $sql = 'SELECT `tagid` FROM `*PREFIX*oclife_humanReadable` WHERE `lang`=? AND `descr`=?';
             $args = array($lang, $parent);
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute($args);
@@ -367,7 +367,7 @@ class hTags {
 
         // Verify for right child
         if($tag !== '') {
-            $sql = 'SELECT `tagid` FROM `*PREFIX*ownTags_humanReadable` WHERE `lang`=? AND `descr`=?';
+            $sql = 'SELECT `tagid` FROM `*PREFIX*oclife_humanReadable` WHERE `lang`=? AND `descr`=?';
             $args = array($lang, $tag);
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute($args);
@@ -394,7 +394,7 @@ class hTags {
      */
     public function setTagParentByID($tagID, $parentID) {
         // Proceed to set tag's parent
-        $sql = 'UPDATE `*PREFIX*ownTags_tags` SET `parent`=? WHERE `id`=?';
+        $sql = 'UPDATE `*PREFIX*oclife_tags` SET `parent`=? WHERE `id`=?';
         $args = array($parentID, $tagID);
         $query = \OCP\DB::prepare($sql);
         $query->execute($args);
@@ -414,13 +414,13 @@ class hTags {
         $result = array();
 
         // Fetch all childs ids if any
-        $sql = 'SELECT `id` FROM `*PREFIX*ownTags_tags` WHERE `parent`=?';
+        $sql = 'SELECT `id` FROM `*PREFIX*oclife_tags` WHERE `parent`=?';
         $args = array($parentID);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
 
         while($row = $resRsrc->fetchRow()) {
-            if(\OCA\ownTags\hTags::readAllowed($row['id'])) {
+            if(\OCA\oclife\hTags::readAllowed($row['id'])) {
                 $result[] = $row['id'];
             }
         }
@@ -474,7 +474,7 @@ class hTags {
         }
 		
 	// Check if the tag can be written
-	if(!\OCA\ownTags\hTags::writeAllowed($row['id'])) {
+	if(!\OCA\oclife\hTags::writeAllowed($row['id'])) {
 		return FALSE;
 	}
 
@@ -500,20 +500,20 @@ class hTags {
 
         // Execute deletion
         foreach ($tagsToDelete as $id) {
-            if(\OCA\ownTags\hTags::writeAllowed($id)) {
+            if(\OCA\oclife\hTags::writeAllowed($id)) {
                 // Delete from tags
-                $sql = 'DELETE FROM `*PREFIX*ownTags_tags` WHERE `id`=?';
+                $sql = 'DELETE FROM `*PREFIX*oclife_tags` WHERE `id`=?';
                 $args = array($id);
                 $query = \OCP\DB::prepare($sql);
                 $query->execute($args);
 
                 // Delete from human readable
-                $sql = 'DELETE FROM `*PREFIX*ownTags_humanReadable` WHERE `tagid`=?';
+                $sql = 'DELETE FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=?';
                 $args = array($id);
                 $query = \OCP\DB::prepare($sql);
                 $query->execute($args);
                 
-                $sql = 'DELETE FROM `*PREFIX*ownTags_docTags` WHERE `tagid`=?';
+                $sql = 'DELETE FROM `*PREFIX*oclife_docTags` WHERE `tagid`=?';
                 $args = array($id);
                 $query = \OCP\DB::prepare($sql);
                 $query->execute($args);
@@ -530,7 +530,7 @@ class hTags {
      * @return string new permissions if success, FALSE otherwise
      */
     public function setTagPermission($tagID, $permission) {
-        if(strlen($permission) != 6 || !\OCA\ownTags\hTags::writeAllowed($tagID)) {
+        if(strlen($permission) != 6 || !\OCA\oclife\hTags::writeAllowed($tagID)) {
             return FALSE;
         }
         
@@ -546,7 +546,7 @@ class hTags {
         
         $newPermission = implode('', $toSet);
         
-        $sql = 'UPDATE `*PREFIX*ownTags_tags` SET `permission`=? WHERE `id`=?';
+        $sql = 'UPDATE `*PREFIX*oclife_tags` SET `permission`=? WHERE `id`=?';
         $args = array($newPermission, $tagID);
         $query = \OCP\DB::prepare($sql);
         $query->execute($args);
@@ -560,14 +560,14 @@ class hTags {
      * @return string Actual tag permission, FALSE in case of failure
      */
     public function getTagPermission($tagID) {
-        $sql = 'SELECT `permission` FROM `*PREFIX*ownTags_tags` WHERE `id`=?';
+        $sql = 'SELECT `permission` FROM `*PREFIX*oclife_tags` WHERE `id`=?';
         $args = array($tagID);
         $query = \OCP\DB::prepare($sql);			
         $resRsrc = $query->execute($args);
 
         $permission = FALSE;
         while($row = $resRsrc->fetchRow()) {
-            $permission = \OCA\ownTags\hTags::getPermission($row['permission']);
+            $permission = \OCA\oclife\hTags::getPermission($row['permission']);
         }
 
         return $permission;
@@ -579,7 +579,7 @@ class hTags {
      * @return string Actual tag owner, FALSE in case of failure
      */
     public function getTagOwner($tagID) {
-        $sql = 'SELECT `owner` FROM `*PREFIX*ownTags_tags` WHERE `id`=?';
+        $sql = 'SELECT `owner` FROM `*PREFIX*oclife_tags` WHERE `id`=?';
         $args = array($tagID);
         $query = \OCP\DB::prepare($sql);			
         $resRsrc = $query->execute($args);
@@ -598,11 +598,11 @@ class hTags {
      * @param type $tagOwner Owner to set
      */
     public function setTagOwner($tagID, $tagOwner) {
-        if(trim($tagOwner) === '' || !\OCA\ownTags\hTags::writeAllowed($tagID)) {
+        if(trim($tagOwner) === '' || !\OCA\oclife\hTags::writeAllowed($tagID)) {
             return FALSE;
         }
                 
-        $sql = 'UPDATE `*PREFIX*ownTags_tags` SET `owner`=? WHERE `id`=?';
+        $sql = 'UPDATE `*PREFIX*oclife_tags` SET `owner`=? WHERE `id`=?';
         $args = array($tagOwner, $tagID);
         $query = \OCP\DB::prepare($sql);
         $query->execute($args);
@@ -617,13 +617,13 @@ class hTags {
      * @return Array Associative array containing tag data
      */
     public function getTagData($tagID, $lang='xx') {
-        $sql = 'SELECT * FROM `*PREFIX*ownTags_humanReadable` WHERE `tagid`=? AND `lang`=?';
+        $sql = 'SELECT * FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=? AND `lang`=?';
         $args = array($tagID, $lang);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
 
         while($row = $resRsrc->fetchRow()) {
-            if(\OCA\ownTags\hTags::readAllowed($row['tagid'])) {
+            if(\OCA\oclife\hTags::readAllowed($row['tagid'])) {
                 $result['key'] = $row['tagid'];
                 $result['title'] = $row['descr'];
             }
@@ -641,7 +641,7 @@ class hTags {
     public static function addTagForFile($fileID, $tagID) {
         // Check if tag is already present
         $result = array();
-        $sql = 'SELECT `id` FROM `*PREFIX*ownTags_docTags` WHERE `fileid`=? AND `tagid`=?';
+        $sql = 'SELECT `id` FROM `*PREFIX*oclife_docTags` WHERE `fileid`=? AND `tagid`=?';
         $args = array($fileID, $tagID);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
@@ -655,7 +655,7 @@ class hTags {
         }
 
         // Proceed to add the tag
-        $sql = 'INSERT INTO `*PREFIX*ownTags_docTags` (`fileid`, `tagid`) VALUES (?,?)';
+        $sql = 'INSERT INTO `*PREFIX*oclife_docTags` (`fileid`, `tagid`) VALUES (?,?)';
         $args = array($fileID, $tagID);
         $query = \OCP\DB::prepare($sql);
         $query->execute($args);
@@ -691,7 +691,7 @@ class hTags {
      */
     public static function removeTagForFile($fileID, $tagID) {
         // Proceed to add the tag
-        $sql = 'DELETE FROM `*PREFIX*ownTags_docTags` WHERE `fileid`=? AND `tagid`=?';
+        $sql = 'DELETE FROM `*PREFIX*oclife_docTags` WHERE `fileid`=? AND `tagid`=?';
         $args = array($fileID, $tagID);
         $query = \OCP\DB::prepare($sql);
         $query->execute($args);
@@ -757,7 +757,7 @@ class hTags {
      */
     public static function getAllTagsForFile($fileID) {
         $result = array();
-        $sql = 'SELECT `tagid` FROM `*PREFIX*ownTags_docTags` WHERE `fileid`=?';
+        $sql = 'SELECT `tagid` FROM `*PREFIX*oclife_docTags` WHERE `fileid`=?';
         $args = array($fileID);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
@@ -775,7 +775,7 @@ class hTags {
      * @return boolean
      */
     public static function removeAllTagsForFile($fileID) {
-        $sql = 'DELETE FROM `*PREFIX*ownTags_docTags` WHERE `fileid`=?';
+        $sql = 'DELETE FROM `*PREFIX*oclife_docTags` WHERE `fileid`=?';
         $args = array($fileID);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
@@ -791,8 +791,8 @@ class hTags {
     public static function getFileWithTag($tagID) {
         $result = array();
 
-        if(\OCA\ownTags\hTags::readAllowed($tagID)) {
-            $sql = 'SELECT `fileid` FROM `*PREFIX*ownTags_docTags` WHERE `tagid`=?';
+        if(\OCA\oclife\hTags::readAllowed($tagID)) {
+            $sql = 'SELECT `fileid` FROM `*PREFIX*oclife_docTags` WHERE `tagid`=?';
             $args = array($tagID);
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute($args);
@@ -844,7 +844,7 @@ class hTags {
         }
 
         // Query for actual tag's owner and permission
-        $sql = "SELECT `owner`, `permission` FROM `*PREFIX*ownTags_tags` WHERE `id`=?";
+        $sql = "SELECT `owner`, `permission` FROM `*PREFIX*oclife_tags` WHERE `id`=?";
         $args = array($tagid);
 
         $query = \OCP\DB::prepare($sql);
@@ -855,7 +855,7 @@ class hTags {
 
         while($row = $resRsrc->fetchRow()) {
             // Legacy check on user and permission
-            $permission = \OCA\ownTags\hTags::getPermission($row['permission']);
+            $permission = \OCA\oclife\hTags::getPermission($row['permission']);
             $owner = isset($row['owner']) ? $row['owner'] : \OCP\User::getUser();
         }
 
@@ -871,7 +871,7 @@ class hTags {
 
         // Check for tags owned by group where $user belongs to
         if(substr($permission, 3, 1) === 'w') {
-            $userCompanion = \OCA\ownTags\utilities::getGroupCompanion($user);
+            $userCompanion = \OCA\oclife\utilities::getGroupCompanion($user);
             $groupPos = array_search($owner, $userCompanion);
 
             return ($groupPos === FALSE) ? FALSE : TRUE;
@@ -898,7 +898,7 @@ class hTags {
         }
         
         // Query for actual tag's owner and permission
-        $sql = "SELECT `owner`, `permission` FROM `*PREFIX*ownTags_tags` WHERE `id`=?";
+        $sql = "SELECT `owner`, `permission` FROM `*PREFIX*oclife_tags` WHERE `id`=?";
         $args = array($tagid);
 
         $query = \OCP\DB::prepare($sql);
@@ -909,7 +909,7 @@ class hTags {
 
         while($row = $resRsrc->fetchRow()) {
             // Legacy check on user and permission
-            $permission = \OCA\ownTags\hTags::getPermission($row['permission']);
+            $permission = \OCA\oclife\hTags::getPermission($row['permission']);
             $owner = isset($row['owner']) ? $row['owner'] : $user;
         }
 
@@ -925,7 +925,7 @@ class hTags {
 
         // Check for tags owned by group's companion where $user belongs to
         if(substr($permission, 2, 1) === 'r') {
-            $userCompanion = \OCA\ownTags\utilities::getUsers($user);
+            $userCompanion = \OCA\oclife\utilities::getUsers($user);
             $groupPos = in_array($owner, $userCompanion);
 
             return ($groupPos === FALSE) ? FALSE : TRUE;

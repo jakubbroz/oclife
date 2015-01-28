@@ -1,5 +1,5 @@
 jQuery(function($) {
-    var container = $('#ownTags_content');
+    var container = $('#oclife_content');
 
     function relayout() {
         container.layout({resize: false});

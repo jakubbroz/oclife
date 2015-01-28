@@ -10,7 +10,7 @@
 			Table containing all tag's data
 		-->
 	
-		<name>*dbprefix*ownTags_tags</name>
+		<name>*dbprefix*oclife_tags</name>
 		<declaration>
 			<field>
 				<!--
@@ -66,7 +66,7 @@
 		<!--
 			Table containing tag's description and the language of the description
 		-->
-		<name>*dbprefix*ownTags_humanReadable</name>
+		<name>*dbprefix*oclife_humanReadable</name>
 		<declaration>
 			<field>
 				<!--
@@ -108,7 +108,7 @@
 			Table containing the tagging of the files:
 			The association of the tags to each file
 		-->
-		<name>*dbprefix*ownTags_docTags</name>
+		<name>*dbprefix*oclife_docTags</name>
 		<declaration>
 			<field>
 				<!--
