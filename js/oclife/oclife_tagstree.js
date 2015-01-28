@@ -161,6 +161,9 @@ $(document).ready(function() {
             if(node !== null) {
                 nodeKey = node.key;
             }
+            if(node==null) {
+              node = $("#tagstree").fancytree("getRootNode");
+            }
 
            // newTagName.value = "";
             document.getElementById('newTagName').value = "";
@@ -944,7 +947,9 @@ $(document).ready(function() {
                     var resArray = jQuery.parseJSON(result);
                     if(resArray.result === 'OK') {
                         var node = $("#tagstree").fancytree("getActiveNode");
-
+                         if(node==null) {
+                             node = $("#tagstree").fancytree("getNodeByKey","-1");
+                        }
                         var nodeData = {
                             'title': resArray.title,
                             'key': parseInt(resArray.key),
