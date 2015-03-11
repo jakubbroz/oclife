@@ -62,14 +62,14 @@ if(substr($filePath, -1) === '/') {
  */
 $fileInfos = \OC\Files\Filesystem::getFileInfo($filePath);
 
-$exts = split("[/\\.]", $filePath);
+$exts = preg_split("/[\.]/", $fileInfos['name']);
 $n    = count($exts)-1;
 $ext  = strtolower($exts[$n]);
 
 if(strcmp($ext,"pdf")==0) {              
     $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/PDFLogo.jpg');
 }
-else if(strcmp($ext,"xls")==0) {
+else if(strcmp($ext,"xls")==0 || strcmp($ext,"xlsx")==0) {
    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/xls.png');}
 else if(strcmp($ext,"mp3")==0 || strcmp($ext,"audio")==0 || strcmp($ext,"wav")==0 || strcmp($ext,"aac")==0 || strcmp($ext,"wma")==0){
    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/music.jpg'); 

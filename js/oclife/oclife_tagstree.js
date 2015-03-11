@@ -13,8 +13,12 @@ $(document).ready(function() {
 
         renderNode: function(event, data) {
             var iconCSS = getItemIcon(data.node.data.permission);
-
             var span = $(data.node.span);
+            if(data.key!="_statusNode")
+            if(data.node.data.owner==document.getElementById("expandDisplayName").outerText) {
+                var findResult = span.find("> span.fancytree-title");
+                span.css("font-weight","bold");
+            }
             var findResult = span.find("> span.fancytree-icon");
             findResult.css("backgroundImage", iconCSS);
             findResult.css("backgroundPosition", "0 0");
@@ -283,6 +287,12 @@ $(document).ready(function() {
                 
                 if(resultData.result === 'OK') {
                     updateStatusBar(t('oclife', 'Owner changed successfully!'));
+                    if(newOwner==$("#expandDisplayName")[0].innerText) {
+                        $(".fancytree-active")[0].style.fontWeight="bold";
+                    } else {
+                        $(".fancytree-active")[0].style.fontWeight="normal";
+                    }
+                    
                 } else if(resultData.result === 'NOTALLOWED') {
                     updateStatusBar(t('oclife', 'Owner not changed! Permission denied!'));
                 } else {
@@ -444,18 +454,24 @@ $(document).ready(function() {
         },
 
         success: function(result) {
-           var niz=null;
-           var niz=JSON.parse(result);
-           var i=0;
-           $pom5=document.getElementById("lista");
-           $pom5.innerHTML="";
-           while(i<niz.length) {
-           $pom4=($("<li id='listali' style='list-style-type: none;margin-left:40%;' ><input type='checkbox' /><input type='hidden' value='"+niz[i].value+"'/>"+niz[i].label+"</li>"));
-           i++;          
-           $pom4.appendTo($pom5);
-           }
-           
-           $( "#ObrisiIh" ).dialog( "open" );
+            var niz = null;
+            var niz = JSON.parse(result);
+            var i = 0;
+            $pom5 = document.getElementById("lista");
+            $pom5.innerHTML = "";
+            while (i < niz.length) {
+                if(niz[i].write) {
+                    $pom4 = ($("<li id='listali' style='list-style-type: none;margin-left:40%;' ><input type='checkbox' /><input type='hidden' value='" + niz[i].value + "'/>" + niz[i].label + "</li>"));
+                    $pom4.appendTo($pom5);           
+                }
+                else if(niz[i].read) {
+                    $pom4 = ($("<li id='listali' style='color:red;list-style-type: none;margin-left:40%;' ><input type='hidden' value='" + niz[i].value + "'/>" + niz[i].label + "</li>"));
+                    $pom4.appendTo($pom5);
+                    }
+                i++;
+            }
+
+            $("#ObrisiIh").dialog("open");
         },
 
         error: function (xhr, status) {
@@ -826,7 +842,7 @@ $(document).ready(function() {
         var bValid = true;
         allFields.removeClass( "ui-state-error" );
         //bValid = bValid && checkLength( tagName, 1, 20 );
-        bValid = bValid && checkLength( document.getElementById("tagName"), 1, 20 );
+        bValid = bValid && checkLength( document.getElementById("tagName"), 1, 80 );
 
         if ( bValid ) {
             /*
@@ -921,7 +937,7 @@ $(document).ready(function() {
         var bValid = true;
         allFields.removeClass( "ui-state-error" );
         //bValid = bValid && checkLength( newTagName, 1, 20 );
-        bValid = bValid && checkLength( document.getElementById("newTagName"), 1, 20 );
+        bValid = bValid && checkLength( document.getElementById("newTagName"), 1, 80 );
 
         if ( bValid ) {
           //  var newValue = newTagName.value;
@@ -960,6 +976,9 @@ $(document).ready(function() {
                         newNode.setActive(true);
 
                         updateStatusBar(t('oclife', 'Tag created successfully!'));
+                        $(".fancytree-lastsib").css("font-weight","bold");
+                        
+                        //location.reload();   
                     } else {
                         updateStatusBar(t('oclife', 'Tag')+" \""+resArray.title+"\" "+t('oclife', 'already exists'));
                     }
@@ -1068,7 +1087,7 @@ $(document).ready(function() {
                 } else if(result === 'NOTALLOWED') {
                     updateStatusBar(t('oclife', 'Priviledge not changed! Permission denied!'));
                 } else {
-                    updateStatusBar(t('oclife', 'Priviledge not changed! Data base error!'));
+                    updateStatusBar(t('oclife', 'Priviledge not changed! Permission denied!'));
                 }
             },
             error: function( xhr, status ) {

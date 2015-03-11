@@ -26,28 +26,38 @@ $rawFileID = filter_input(INPUT_POST, 'fileID', FILTER_SANITIZE_URL);
 $tagID = filter_input(INPUT_POST, 'tagID', FILTER_SANITIZE_NUMBER_INT);
 
 $fileIDs = json_decode($rawFileID);
+$ctags = new \OCA\oclife\hTags();
 
-switch($op) {
+switch ($op) {
     case 'add': {
-        if(is_array($fileIDs)) {
-            $result = \OCA\oclife\hTags::addTagForFiles($fileIDs, $tagID);
-        } else {
-            $result = \OCA\oclife\hTags::addTagForFile($fileIDs, $tagID);
+            if ($ctags->writeAllowed($tagID)) {
+                if (is_array($fileIDs)) {
+                    $result = \OCA\oclife\hTags::addTagForFiles($fileIDs, $tagID);
+                } else {
+                    $result = \OCA\oclife\hTags::addTagForFile($fileIDs, $tagID);
+                }
+            } else {
+                $result = "permission";
+            }
+            break;
         }
-        
-        break;
-    }
-    
+
     case 'remove': {
-        if(is_array($fileIDs)) {
-            $result = \OCA\oclife\hTags::removeTagForFiles($fileIDs, $tagID);
-        } else {
-            $result = \OCA\oclife\hTags::removeTagForFile($fileIDs, $tagID);
+        
+        if ($ctags->writeAllowed($tagID)) {
+
+                if (is_array($fileIDs)) {
+                    $result = \OCA\oclife\hTags::removeTagForFiles($fileIDs, $tagID);
+                } else {
+                    $result = \OCA\oclife\hTags::removeTagForFile($fileIDs, $tagID);
+                }
+                break;
+            }
+            else {
+                $result=FALSE;
+            }
         }
-        break;
-    }
 }
 
 $resul=array('result'=>$result);
 echo json_encode($resul);
-die($result);

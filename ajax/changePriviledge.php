@@ -36,19 +36,12 @@ $ctags = new \OCA\oclife\hTags();
 $user = \OCP\User::getUser();
 $tagOwner = $ctags->getTagOwner($tagID);
 
-if(isset($tagOwnerToSet)) {
-    if((!OC_User::isAdminUser(OC_User::getUser()) && !$user === $tagOwner)) {
+
+    if(!(OC_User::isAdminUser(OC_User::getUser()) || $user === $tagOwner)) {
     $result = json_encode(array('result'=>'NOTALLOWED', 'newpriviledges' => '', 'newowner' => ''));
     die($result);
-
-}
-}
-
-
-
-
-
-if($ctags->writeAllowed($tagID, $user) || $user === $tagOwner) {
+    }
+    else {
     if(isset($priviledge)) {
         // Set priviledges
         $newPriviledges = $ctags->setTagPermission($tagID, $priviledge);
@@ -60,8 +53,6 @@ if($ctags->writeAllowed($tagID, $user) || $user === $tagOwner) {
     }
 
     $result = json_encode(array('result'=>'OK', 'newpriviledges' => $newPriviledges, 'newowner' => $newOwner));    
-} else {
-    $result = json_encode(array('result'=>'NOTALLOWED', 'newpriviledges' => '', 'newowner' => ''));
-}
+    }
 
 echo $result;

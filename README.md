@@ -1,11 +1,8 @@
-ownTags
+oclife
 ======
 
-Tagging and getting extended document information on ownCloud.
-This application has been forked from  https://github.com/fpiraneo/oclife.
+Tagging and getting extended document informations on ownCloud
 
-Please read the project's wiki at https://github.com/UrosStankovic/ownTags/wiki/
+Please read the project's wiki at https://github.com/fpiraneo/oclife/wiki .
 
-When you download this app change directory name to "ownTags" and put it in folder .../owncloud/apps/.
-Then enable it on server.
-Otherwise you won't be able to activate the plugin in your owncloud installation.
+In case the plugin folder (this README.md file is in) is not named "oclife" you need to rename it to "oclife". Otherwise you won't be able to activate the plugin in your owncloud installation.

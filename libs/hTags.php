@@ -77,7 +77,7 @@ class hTags {
 	 * @param string $permission unix-style of the read/write permission of the tag
      * @return integer Newly inserted index, FALSE if parameters not valid
      */
-    public function newTag($tagLang, $tagDescr, $parentID, $owner=NULL, $permission='rw----') {
+    public function newTag($tagLang, $tagDescr, $parentID, $owner=NULL, $permission='rwr---') {
         // Check if provided parameters are correct
         if(strlen(trim($tagLang)) !== 2 || trim($tagDescr) === '' || !is_int($parentID) || $parentID < -1) {
             return FALSE;
@@ -294,10 +294,11 @@ class hTags {
         $args = array($ID);
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute($args);
-        
+        $owner="";
         $tagPermission = 'r-----';
         while($row = $resRsrc->fetchRow()) {
             $tagPermission = \OCA\oclife\hTags::getPermission($row['permission']);
+            $owner=$row['owner'];
         }
 
         $sql = 'SELECT * FROM `*PREFIX*oclife_humanReadable` WHERE `tagid`=? AND `lang`=?';
@@ -310,6 +311,7 @@ class hTags {
                 $result['key'] = $row['tagid'];
                 $result['title'] = $row['descr'];
                 $result['permission'] = $tagPermission;
+                $result['owner']=$owner;
             }
         }
 
@@ -453,6 +455,7 @@ class hTags {
             $childs = $objTmp->aFlat;
 
             foreach($childs as $child) {
+                //uncomment if you want to select all child tags.
                 $result[] = $child;
             }
         } else {
@@ -461,6 +464,8 @@ class hTags {
 
         return $result;
     }
+    
+   
 
     /**
      * Delete a tag and all it's childs
@@ -474,7 +479,7 @@ class hTags {
         }
 		
 	// Check if the tag can be written
-	if(!\OCA\oclife\hTags::writeAllowed($row['id'])) {
+	if(!\OCA\oclife\hTags::writeAllowed($tagID)) {
 		return FALSE;
 	}
 
@@ -745,6 +750,33 @@ class hTags {
             } else {
                 $result = array_intersect($result, $tagsForFile);
             }
+        }
+
+        return $result;
+    }
+    
+    /**
+     * return array of boolean true if file have tag,alse false
+     * @param type $fileIDs
+     * @return boolean
+     */
+    public static function getTagsForFiles($fileIDs) {       
+        $result = array();
+        
+        foreach($fileIDs as $fileID) {
+           
+            $sql = 'SELECT count(*) as num FROM `*PREFIX*oclife_docTags` WHERE `fileid`=?';
+            $args = array($fileID);
+            $query = \OCP\DB::prepare($sql);
+            $resRsrc = $query->execute($args);
+            $row = $resRsrc->fetchRow();
+            
+            if($row['num']==0){
+                $result[] = FALSE;
+            } else {
+                $result[] = TRUE;
+            }            
+            
         }
 
         return $result;

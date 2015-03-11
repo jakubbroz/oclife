@@ -33,12 +33,7 @@ $tagsToSearch = array();
 
 foreach($tags as $tag) {    
     $tagID = intval($tag->key);
-    
-    $partTags = $ctags->getAllChildID($tagID);
-    
-    foreach($partTags as $tag) {
-        $tagsToSearch[] = intval($tag);
-    }
+    $tagsToSearch[] = intval($tagID);
 }
 
 // Look for files with that tag
@@ -53,7 +48,7 @@ foreach($fileData as $file) {
 }
 else {
      $result = '<table class="CSSTableGenerator">';
-     $result.='<tr><td style="text-align:left";>'.$l->t('File name').'</td><td colspan="3"></td><td>'.$l->t('Size').'</td><td>'.$l->t('When added').'</td></tr>';
+     $result.='<tr><td style="text-align:left";>'.$l->t('File name').'</td><td colspan="3">'.$l->t('Actions').'</td><td>'.$l->t('Size').'</td><td>'.$l->t('When added').'</td></tr>';
      foreach($fileData as $file) {
     $result .= \OCA\oclife\utilities::prepareTile1($file);
 }

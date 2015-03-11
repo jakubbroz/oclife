@@ -291,7 +291,7 @@
         })
         .on('dblclick', function (e) {
           if (_self._disabled || _self._readonly || !_self.options.allowEditing ) return false
-          _self.edit( $token )
+          //_self.edit( $token )
         })
 
       $closeButton

@@ -250,7 +250,7 @@ class utilities {
         $result = '<div class="oclife_tile" data-fileid="' . $fileData['fileid'] . '" data-filePath="' . $pathInfo . '" data-fullPath="' . $filePath . '">';
         $result .= '<div class="oclife_ime">' . $fileData['name'] . '</div>';
         
-        $exts = split("[/\\.]", $fileData['name']);
+        $exts = preg_split("/[\.]/", $fileData['name']);
         $n    = count($exts)-1;
         $ext  =strtolower($exts[$n]);
              
@@ -258,7 +258,7 @@ class utilities {
              if(strcmp($ext,"pdf")==0) {              
                   $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/PDFLogo.jpg');
             }
-            else if(strcmp($ext,"xls")==0) {
+            else if(strcmp($ext,"xls")==0 || strcmp($ext,"xlsx")==0) {
                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/xls.png');}
             else if(strcmp($ext,"mp3")==0 || strcmp($ext,"audio")==0 || strcmp($ext,"wav")==0 || strcmp($ext,"aac")==0 || strcmp($ext,"wma")==0){
                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/music.jpg'); 
@@ -290,7 +290,7 @@ class utilities {
        
         $name=$fileData['name'];
         $size=\OCA\oclife\utilities::formatBytes($fileData['size'], 2, TRUE);
-        $date=date('d/m/Y H:i:s', $fileData['date']);
+        $date=date('d/m/Y H:i:s', strtotime('+1 hours', $fileData['date']));
         
          
         $pathInfo = substr(pathinfo($fileData['path'], PATHINFO_DIRNAME), 6);
@@ -299,16 +299,16 @@ class utilities {
                 
         $result="<tr filepath='".$filePath."' fileid='".$fileData['fileid']."'><td>".$name."</td>";
        
-        $exts = split("[/\\.]", $fileData['name']);
+        $exts = preg_split("/[\.]/", $fileData['name']);
         $n    = count($exts)-1;
         $extension  =strtolower($exts[$n]);
          $l = new \OC_L10N('oclife');
         if($extension=="jpg" || $extension=="jpeg" || $extension=="png" || $extension=="tiff" || $extension=="pdf") {              
         
-            $result.="<td id='download'>".$l->t('Download')."</td><td id='preview'>".$l->t('Preview')."</td><td id='delete'>".$l->t('Delete tag')."</td>";
+            $result.="<td id='download'><button id='sivo'>".$l->t('Download')."</button></td><td id='preview'><button id='sivo'>".$l->t('Preview')."</button></td><td id='delete'><button id='sivo'>".$l->t('Delete tag')."</button></td>";
         }    
         else {
-            $result.="<td id='download'>".$l->t('Download')."</td><td></td><td id='delete'>".$l->t('Delete tag')."</td>";
+            $result.="<td id='download'><button id='sivo'>".$l->t('Download')."</button></td><td></td><td id='delete'><button id='sivo'>".$l->t('Delete tag')."</button></td>";
         }
 
        
@@ -380,14 +380,22 @@ class utilities {
      * @param String $withDisplayName Get also display name if set to TRUE
      * @return Array All users belonging to indicated group
      */
-    public static function getUsers($group = NULL, $withDisplayName = FALSE) {
+    public static function getUsers($user = NULL, $withDisplayName = FALSE) {
         if(trim($group) === '' || $group === NULL) {
             $sql = 'SELECT `uid`, `displayname` FROM `*PREFIX*users` ORDER BY `displayname`';
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute();
         } else {
+            $gsql='Select `gid` from `*PREFIX*users` WHERE `uid`=?';
+            $query= \OCP\DB::prepare($sql); 
+            $resRsrc = $query->execute($user);
+            $group=array();
+            while($row = $resRsrc->fetchRow()) {
+                $group[]=$row['gid'];
+            }
+            
             $sql = 'SELECT `uid`, `displayname` FROM `*PREFIX*users` WHERE `uid` IN (SELECT `uid` FROM *PREFIX*group_user WHERE `gid` = ?) ORDER BY `displayname`';
-            $args = array($group);            
+            $args = $group;            
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute($args);
         }

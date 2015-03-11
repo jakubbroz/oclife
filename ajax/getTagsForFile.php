@@ -35,7 +35,9 @@ $tags = new \OCA\oclife\hTags();
 $result = array();
 foreach($tagCodes as $tagID) {
     $tagData = $tags->searchTagFromID($tagID);
-    $result[] = new \OCA\oclife\tag($tagID, $tagData['xx']);
+    //$result[] = new \OCA\oclife\tag($tagID, $tagData['xx']);
+    $result[] = array ( "value"=>$tagID,"label"=>$tagData['xx'],"read"=>$tags->readAllowed($tagID),"write"=>$tags->writeAllowed($tagID));
+    
 }
 
 $jsonTagData = json_encode((array) $result);

@@ -64,8 +64,21 @@ if($tagOp == 'rename' || $tagOp == 'delete') {
 	}
 }
 
+
+
 // Tag handler instance
 $ctags = new \OCA\oclife\hTags();
+
+//Only owner can delete tag
+if(($ctags->getTagOwner($tagID)!=\OCP\User::getUser() && !\OC_User::isAdminUser(\OCP\User::getUser()))  && $tagOp == 'delete') {
+                $result = array(
+			'result' => 'NOTALLOWED',
+			'title' => '',
+			'key' => $tagID
+		);
+
+		die(json_encode($result));
+}
 
 // Switch between possible operations
 switch($tagOp) {
@@ -92,7 +105,7 @@ switch($tagOp) {
         $result1 = 0;
 
         foreach($tagData1 as $tag) {
-            if($tag['tagid'] !== '-1') {       
+            if($tag['tagid'] !== '-1' && $tag['tagid'] !==$tagID) {       
                 if(strcmp(strtolower($tag['descr']), strtolower($searchKey))== 0) {
                     $result1= $tag['descr'];
                     $cvrc=1;
@@ -109,16 +122,17 @@ switch($tagOp) {
         
         $result = $ctags->alterTag($tagID, $tagData);
         $permission = $ctags->getTagPermission($tagID);
+        $owner = $ctags->getTagOwner($tagID);
         
         break;
     }
     
-    case 'delete': {
+    case 'delete': {       
         $result = $ctags->deleteTagAndChilds(intval($tagID));
         $permission = '';
         $owner = '';
-        
         break;
+        
     }
     
     case 'info': {

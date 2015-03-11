@@ -54,7 +54,7 @@ $TRANSLATIONS = array(
     'Confirm' => 'Potvrdi',
 // Extended info popup
 // - JavaScript
-    'Tag selected files' => 'Označi odabrane fajlove',
+    'Tag selected files' => 'Taguj odabrane fajlove',
     'Unable to get user\'s priviledge.' => 'Nije moguće dobiti korisničke privilegije.',
     'Informations' => 'Informacije',
     'Enter tags here' => 'Unesi tag ovde',
@@ -72,6 +72,10 @@ $TRANSLATIONS = array(
     'Unable to get actual tags for this document! Ajax error!' => 'Nije moguće dobiti tagove za ovaj fajl! Greška ajax-a!',
     'All selected files' => 'Svi izabrani fajlovi',
     'Informations on' => 'Informacije o',
+    'Priviledge not changed! Permission denied!' => 'Privilegije nisu promenjene! Nemate dozvolu!',
+    'Owner changed successfully!' => 'Vlasnik promenjen!',
+    'Owner not changed! Permission denied!' => 'Vlasnik nije promenjen! Nemate dozvolu',
+    
     
 // getFileInfo.php
     'Multiple files selected' => 'Više odabranih fajlova',
@@ -82,11 +86,15 @@ $TRANSLATIONS = array(
     'Yes' => 'Da',
     'No' => 'Ne',
     'Unencrypted size' => 'Nekriptovana veličina: ',
- //new
+    'Folders must not be tagged!' => 'Folderi ne mogu biti tagovani!',
+    'Unable to remove the tag! Permission denied.' => 'Nije moguće ukloniti tag! Nemate dozvolu!',
+    'Unable to add the tag! Permission denied.'=>'Nije moguće dodati tag! Nemate dozvolu!',
+//new
     'already exists'=>'već postoji',
     'Tag'=>'Tag',
     'Download'=>'Preuzmi',
     'Delete tag'=>'Obriši tag',
     'Preview'=>'Pregledaj',
-    'Check the tags you want to delete'=>'Izaberi tagove koje želiš da obrišeš'
+    'Check the tags you want to delete'=>'Izaberi tagove koje želiš da obrišeš',
+    'Actions'=>'Akcije'
 );
