@@ -30,7 +30,7 @@ $ctags = new \OCA\oclife\hTags();
 
 switch ($op) {
     case 'add': {
-            if ($ctags->writeAllowed($tagID)) {
+            if ($ctags->readAllowed($tagID)) {
                 if (is_array($fileIDs)) {
                     $result = \OCA\oclife\hTags::addTagForFiles($fileIDs, $tagID);
                 } else {

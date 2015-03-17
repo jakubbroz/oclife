@@ -9,31 +9,34 @@ $(document).ready(function(){
     var extInfoActionRegistered = false;
 
     // Add tags button to 'files/index.php'
-    if(typeof FileActions !== 'undefined') {
-            // Add action to tag a group of files
-            $(".selectedActions").html(function(index, oldhtml) {
-                if(oldhtml.indexOf("download") > 0) {
-                    var tagIconPath = OC.imagePath('oclife','icon_tag');
-                    var newAction = "<a class=\"donwload\" id=\"tagGroup\">";
-                    newAction += "<img class=\"svg\" src=\"" + tagIconPath + "\" alt=\"Tag group of file\" style=\"width: 17px; height: 17px; margin: 0px 5px 0px 5px;\" />";
-                    newAction += t('oclife', 'Tag selected files') + "</a>";
-                    return newAction + oldhtml;
-                } else {
-                    return oldhtml;
-                }
+    LoadTagButton();
+    
+    function LoadTagButton() {
+        if(typeof FileActions !== 'undefined') {
+                // Add action to tag a group of files
+                $(".selectedActions").html(function(index, oldhtml) {
+                    if(oldhtml.indexOf("download") > 0) {
+                        var tagIconPath = OC.imagePath('oclife','icon_tag');
+                        var newAction = "<a class=\"donwload\" id=\"tagGroup\">";
+                        newAction += "<img class=\"svg\" src=\"" + tagIconPath + "\" alt=\"Tag group of file\" style=\"width: 17px; height: 17px; margin: 0px 5px 0px 5px;\" />";
+                        newAction += t('oclife', 'Tag selected files') + "</a>";
+                        return newAction + oldhtml;
+                    } else {
+                        return oldhtml;
+                    }
+                });
+
+                var infoIconPath = OC.imagePath('oclife','icon_info');
+
+                FileActions.register('file', t('oclife', 'Tag'), OC.PERMISSION_UPDATE , infoIconPath, function(fileName) {
+                    // Action to perform when clicked
+                    if(scanFiles.scanning) { return; } // Workaround to prevent additional http request block scanning feedback
+                showFileInfo(fileName);
             });
 
-            var infoIconPath = OC.imagePath('oclife','icon_info');
-            
-            FileActions.register('file', t('oclife', 'Tag'), OC.PERMISSION_UPDATE , infoIconPath, function(fileName) {
-                // Action to perform when clicked
-                if(scanFiles.scanning) { return; } // Workaround to prevent additional http request block scanning feedback
-            showFileInfo(fileName);
-        });
-        
-        extInfoActionRegistered = true;
-    }
-    
+            extInfoActionRegistered = true;
+        }
+        }
    
 
     // This is the div where informations will appears
@@ -177,7 +180,8 @@ $(document).ready(function(){
             oldHash = window.location.href;
         };
         setInterval(function () {
-            detect()
+            detect();
+            
         }, 1000);
     }
 

@@ -22,6 +22,7 @@ $(document).ready(function() {
             var findResult = span.find("> span.fancytree-icon");
             findResult.css("backgroundImage", iconCSS);
             findResult.css("backgroundPosition", "0 0");
+            
         },
 
         source: {
@@ -976,8 +977,9 @@ $(document).ready(function() {
                         newNode.setActive(true);
 
                         updateStatusBar(t('oclife', 'Tag created successfully!'));
-                        $(".fancytree-lastsib").css("font-weight","bold");
-                        
+                        $(".fancytree-active").css("font-weight","bold");
+                        var node = $("#tagstree").fancytree("getRootNode");
+                        node.sortChildren(null, true);
                         //location.reload();   
                     } else {
                         updateStatusBar(t('oclife', 'Tag')+" \""+resArray.title+"\" "+t('oclife', 'already exists'));
@@ -1122,9 +1124,12 @@ $(document).ready(function() {
             $("#previewArea").attr("src", "");
         }
     });   
-        
-
-
+       
+    
+    setTimeout(function() {
+          var node = $("#tagstree").fancytree("getRootNode");
+          node.sortChildren(null, true);
+    },250);
 
 });
 
