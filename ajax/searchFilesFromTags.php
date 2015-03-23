@@ -26,7 +26,7 @@ $ctags = new \OCA\oclife\hTags();
 
 $JSONtags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_URL);
 $listgrid = filter_input(INPUT_POST, 'listgrid', FILTER_SANITIZE_URL);
-
+$andor=  filter_input(INPUT_POST, 'andor', FILTER_SANITIZE_URL);
 // Look for selected tag and child
 $tags = json_decode($JSONtags);
 $tagsToSearch = array();
@@ -37,7 +37,7 @@ foreach($tags as $tag) {
 }
 
 // Look for files with that tag
-$filesIDs = \OCA\oclife\hTags::getFileWithTagArray($tagsToSearch);
+$filesIDs = \OCA\oclife\hTags::getFileWithTagArray($tagsToSearch,$andor);
 $fileData = \OCA\oclife\utilities::getFileInfoFromID(OCP\User::getUser(), $filesIDs);
 
 $result = '';

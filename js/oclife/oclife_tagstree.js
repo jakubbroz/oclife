@@ -59,33 +59,42 @@ $(document).ready(function() {
             }
 
             var tags = JSON.stringify(selNodesData);
-                
-            
-            
-            $.ajax({
-                url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+            if(tags.length>2) {    
+                var loading=document.getElementById("oclife_fileList");
+                var load=t('oclife','LOADING...');
+                loading.innerHTML="<div id='loading'>"+load+"</div>";
 
-                data: {
-                    tags: tags,
-                    listgrid: $("#myonoffswitch")[0].checked
-                },
+                $.ajax({
+                    url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
 
-                type: "POST",
+                    data: {
+                        tags: tags,
+                        listgrid: $("#myonoffswitch")[0].checked,
+                        andor:$("#myandorswitch")[0].checked
+                    },
 
-                success: function( result ) {
-                    $("#oclife_fileList").html(result);
+                    type: "POST",
 
-                    if(result === '') {
-                        $("#oclife_emptylist").css("display", "block");
-                    } else {
-                        $("#oclife_emptylist").css("display", "none");
+                    success: function( result ) {
+                        document.getElementById("loading").remove();
+                        $("#oclife_fileList").html(result);
+
+                        if(result === '') {
+                            $("#oclife_emptylist").css("display", "block");
+                        } else {
+                            $("#oclife_emptylist").css("display", "none");
+                        }
+                    },
+
+                    error: function( xhr, status ) {
+                        updateStatusBar(t('oclife', 'Unable to get files list!'));
                     }
-                },
-
-                error: function( xhr, status ) {
-                    updateStatusBar(t('oclife', 'Unable to get files list!'));
-                }
-            });
+                });
+            }
+            else {
+                $("#oclife_fileList").html("");
+            }   
+        
         },
 
         dnd: {
@@ -511,7 +520,7 @@ $(document).ready(function() {
         }
     });
     
-    $('#myonoffswitch').click(function() {
+    function switchevi() {
          var selectedNodes = $("#tagstree").fancytree("getTree").getSelectedNodes();
          var selNodesData = new Array();
 
@@ -524,18 +533,24 @@ $(document).ready(function() {
         }
 
         var tags = JSON.stringify(selNodesData);
-
-        $.ajax({
+       
+        if(tags.length>2) {
+        var loading=document.getElementById("oclife_fileList");
+        var load=t('oclife','LOADING...');
+        loading.innerHTML="<div id='loading'>"+load+"</div>";
+            $.ajax({
             url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
 
             data: {
                 tags: tags,
-                 listgrid: $("#myonoffswitch")[0].checked
+                listgrid: $("#myonoffswitch")[0].checked,
+                andor:$("#myandorswitch")[0].checked
             },
 
             type: "POST",
 
             success: function( result ) {
+                document.getElementById("loading").remove();
                 $("#oclife_fileList").html(result);
 
                 if(result === '') {
@@ -548,8 +563,12 @@ $(document).ready(function() {
             error: function( xhr, status ) {
                 updateStatusBar(t('oclife', 'Unable to get files list!'));
             }
-        });  
-});
+            }); 
+            } 
+        }
+        
+        $('#myandorswitch').click(function() {switchevi()});
+        $('#myonoffswitch').click(function() {switchevi()});
     
 
         
@@ -582,13 +601,14 @@ $(document).ready(function() {
                                     }
 
                                     var tags = JSON.stringify(selNodesData);
-
+                                    if(tags.length>2){
                                     $.ajax({
                                         url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
 
                                         data: {
                                             tags: tags,
-                                             listgrid: $("#myonoffswitch")[0].checked
+                                             listgrid: $("#myonoffswitch")[0].checked,
+                                            andor:$("#myandorswitch")[0].checked
                                         },
 
                                         type: "POST",
@@ -606,7 +626,7 @@ $(document).ready(function() {
                                         error: function( xhr, status ) {
                                             updateStatusBar(t('oclife', 'Unable to get files list!'));
                                         }
-                                    });  
+                                    });  }
                         },
 
                         error: function (xhr, status) {

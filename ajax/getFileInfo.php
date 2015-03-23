@@ -80,7 +80,7 @@ else if(strcmp($ext,"odt")==0 || strcmp($ext,"doc")==0 || strcmp($ext,"docx")==0
 else if(strcmp($ext,"mp4")==0 || strcmp($ext,"avi")==0 || strcmp($ext,"flv")==0 || strcmp($ext,"mpeg")==0 || strcmp($ext,"m4v")==0 || strcmp($ext,"mkv")==0) {
     $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/video.png');
 }
-else if(strcmp($ext,"ppt")==0) {
+else if(strcmp($ext,"ppt")==0 || strcmp($ext,"pptx")==0)  {
         $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/presentacion.jpg');
 }
 else if(strcmp($ext,"zip")==0 || strcmp($ext,"7z")==0 || strcmp($ext,"rar")==0 || strcmp($ext,"tar.gz")==0 || strcmp($ext,"tar")==0) {

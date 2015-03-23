@@ -96,5 +96,6 @@ $TRANSLATIONS = array(
     'Delete tag'=>'Обриши tаг',
     'Preview'=>'Прегледај',
     'Check the tags you want to delete'=>'Изабери тагове које желиш да избришеш',
-    'Actions'=>'Акције'
+    'Actions'=>'Акције',
+    'LOADING...'=>'УЧИТАВАМ...'
 );

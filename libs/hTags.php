@@ -823,16 +823,24 @@ class hTags {
     public static function getFileWithTag($tagID) {
         $result = array();
 
-        if(\OCA\oclife\hTags::readAllowed($tagID)) {
-            $sql = 'SELECT `fileid` FROM `*PREFIX*oclife_docTags` WHERE `tagid`=?';
-            $args = array($tagID);
+        if(is_array($tagID)) {
+            $ids = "(".implode(',',$tagID).")"; 
+            $sql = "SELECT `fileid` FROM `*PREFIX*oclife_docTags` WHERE `tagid` IN $ids";
+            
+        }
+        else {
+            $ids=$tagID;
+            $sql = "SELECT `fileid` FROM `*PREFIX*oclife_docTags` WHERE `tagid` = $ids";
+            
+        }
+            
             $query = \OCP\DB::prepare($sql);
-            $resRsrc = $query->execute($args);
+            $resRsrc = $query->execute();
 
             while($row = $resRsrc->fetchRow()) {
                 $result[] = intval($row['fileid']);
             }
-        }
+        //}
 
         return $result;
     }
@@ -841,18 +849,23 @@ class hTags {
      * Array containing all the tags to be looked for
      * @param array $tagArray Tag to look at - Tags will be OR'ed
      */
-    public static function getFileWithTagArray($tagArray) {
+    public static function getFileWithTagArray($tagArray,$andor) {
         // If is not an array, gives up
         if(!is_array($tagArray)) {
             return -1;
         }
-
         $filesID = array();
-        foreach($tagArray as $tag) {
-            $partFilesID = hTags::getFileWithTag($tag);
-            $filesID = array_merge($filesID, $partFilesID);
+        
+        if($andor=="true") {
+        $filesID = hTags::getFileWithTag($tagArray);
         }
-
+        else {
+             $filesID=hTags::getFileWithTag($tagArray[0]);
+            foreach ($tagArray as $tag) {
+                $partFilesID=hTags::getFileWithTag($tag);
+                $filesID= array_intersect($filesID, $partFilesID);
+            }
+        }
         $uniquesID = array_unique($filesID);
 
         return $uniquesID;

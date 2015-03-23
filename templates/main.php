@@ -48,13 +48,23 @@ $l = new \OC_L10N('oclife');
     </select>
     
     <div style="float:right">
-    <div class="onoffswitch">
-    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-    <label class="onoffswitch-label" for="myonoffswitch">
-        <span class="onoffswitch-inner"></span>
-        <span class="onoffswitch-switch"></span>
-    </label>
+        <div class="onoffswitch">
+            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+            <label class="onoffswitch-label" for="myonoffswitch">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+            </label>
+        </div>
     </div>
+    
+    <div style="float:right">
+        <div class="andorswitch">
+            <input type="checkbox" name="andorswitch" class="andorswitch-checkbox" id="myandorswitch" checked>
+            <label class="andorswitch-label" for="myandorswitch">
+                <span class="andorswitch-inner"></span>
+                <span class="andorswitch-switch"></span>
+            </label>   
+        </div>
     </div>
     
 </div>

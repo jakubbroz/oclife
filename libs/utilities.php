@@ -215,24 +215,29 @@ class utilities {
      * @return array Associative array with required infos
      */
     public static function getFileInfoFromID($user, $filesID) {
-        if(!is_array($filesID)) {
+        if(!is_array($filesID) || empty($filesID)) {
             return -1;
         }
-        
-        $usersFile = utilities::getFileList($user, '/files', false, true);
-        
-        if($usersFile === -1) {
-            return -2;
-        }
-        
-        // Loop through the provided file ID and return all result
+       
         $result = array();
+        $ids = "(".implode(',',$filesID).")"; 
+        $sql = "SELECT * FROM `*PREFIX*filecache` WHERE `fileid` IN $ids";
+            
+        $query = \OCP\DB::prepare($sql);
+        $resRsrc = $query->execute();
         
-        foreach($filesID as $fileID) {
-            if(isset($usersFile[$fileID])) {
-                $result[$fileID] = $usersFile[$fileID];
-            }
+        
+        while($row = $resRsrc->fetchRow()) {
+            $result[]= array(
+                    'fileid' =>intval($row['fileid']),
+                    'name' => ($row['name']),
+                    'size'=> intval($row['size']),
+                    'etag'=>intval($row['etag']),
+                    'date'=>intval($row['mtime']),
+                    'path' => ($row['path'])
+                );          
         }
+  
         
         return $result;
     }
@@ -269,7 +274,7 @@ class utilities {
             else if(strcmp($ext,"mp4")==0 || strcmp($ext,"avi")==0 || strcmp($ext,"flv")==0 || strcmp($ext,"mpeg")==0 || strcmp($ext,"m4v")==0 || strcmp($ext,"mkv")==0) {
                 $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/video.png');
             }
-            else if(strcmp($ext,"ppt")==0) {
+            else if(strcmp($ext,"ppt")==0 || strcmp($ext,"pptx")==0)  {
                     $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/presentacion.jpg');
             }
             else if(strcmp($ext,"zip")==0 || strcmp($ext,"7z")==0 || strcmp($ext,"rar")==0 || strcmp($ext,"tar.gz")==0 || strcmp($ext,"tar")==0) {

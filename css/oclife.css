@@ -160,6 +160,53 @@ div.oclife_tile:hover {
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px; 
 }
+
+.andorswitch {
+    position: relative; width: 90px; margin-top: 2px; margin-right: 5px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.andorswitch-checkbox {
+    display: none;
+}
+.andorswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+.andorswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+.andorswitch-inner:before, .andorswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+.andorswitch-inner:before {
+    content: "OR";
+    padding-left: 10px;
+    background-color: #1d2d44; color: #FFFFFF;
+}
+.andorswitch-inner:after {
+    content: "AND";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: rgb(136, 136, 136);
+    text-align: right;
+}
+.andorswitch-switch {
+    display: block; width: 18px; margin: 6px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 20px;
+    position: absolute; top: 0; bottom: 0; right: 56px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s; 
+}
+.andorswitch-checkbox:checked + .andorswitch-label .andorswitch-inner {
+    margin-left: 0;
+}
+.andorswitch-checkbox:checked + .andorswitch-label .andorswitch-switch {
+    right: 0px; 
+}
 .CSSTableGenerator {
 	margin:0px;padding:0px;
 	width:100%;
@@ -286,4 +333,10 @@ div.oclife_tile:hover {
     border-bottom: 1px solid #222;
     position: relative;
     cursor: pointer;
+}
+
+#loading {
+    text-align: center;
+    font-size: 30px;
+    margin:40%;
 }
