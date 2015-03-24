@@ -218,10 +218,16 @@ class utilities {
         if(!is_array($filesID) || empty($filesID)) {
             return -1;
         }
+        $storage='home::'.$user;
+        $sql0="SELECT numeric_id from `*PREFIX*storages` where id LIKE '$storage'";
+        $query = \OCP\DB::prepare($sql0);
+        $row = $query->execute()->fetchRow();
+        $storage=intval($row['numeric_id']);
+        
        
         $result = array();
         $ids = "(".implode(',',$filesID).")"; 
-        $sql = "SELECT * FROM `*PREFIX*filecache` WHERE `fileid` IN $ids";
+        $sql = "SELECT * FROM `*PREFIX*filecache` f LEFT JOIN `*PREFIX*share` s ON f.fileid=s.item_source  WHERE f.fileid IN $ids AND (f.storage=$storage OR s.share_with LIKE '$user')";
             
         $query = \OCP\DB::prepare($sql);
         $resRsrc = $query->execute();
