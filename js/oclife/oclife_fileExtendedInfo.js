@@ -53,7 +53,7 @@ $(document).ready(function(){
             </tr>\n\
             </table>\n\
             </div>\n\
-            <fieldset class="oclife_tagsbox" id="oclife_tags_container"><legend>Tags</legend>\n\
+            <fieldset class="oclife_tagsbox" id="oclife_tags_container"><legend>'+t('oclife','Tags')+'</legend>\n\
             <input type="text" class="form-control" id="oclife_tags" placeholder="' + t('oclife', 'Enter tags here') + '" min-width: 150px; />\n\
             </fieldset>\n\
             </div>');
@@ -89,7 +89,7 @@ $(document).ready(function(){
         for (var i = 0; i < files.length; i++) {
             if (files[i].type == "dir") {
                 c = 1;
-                updateStatusBar(t('oclife', 'Folders must not be tagged! '));
+                updateStatusBar(t('oclife', 'Folders must not be tagged!'));
                 break;
             }
         }

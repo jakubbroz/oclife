@@ -70,7 +70,7 @@ $TRANSLATIONS = array(
     'Unable to get the tags! Ajax error.' => 'Није могуће добити тагове! Грешка ајах-а!',
     'Unable to retrieve informations on this file! Ajax error!' => 'Није могуће добити информације о овом фајлу! Грешка ајах-а!',
     'Unable to get actual tags for this document! Ajax error!' => 'Није могуће добити тагове за овај документ! Грешка ајах-а!',
-    'All selected files' => 'Сви избирсани тагови',
+    'All selected files' => 'Сви изaбрани тагови',
     'Informations on' => 'Информације o',
     'Priviledge not changed! Permission denied!' => 'Привилегије нису промењене! Немате дозволу!',
     'Owner changed successfully!' => 'Власник промењен!',
@@ -97,5 +97,6 @@ $TRANSLATIONS = array(
     'Preview'=>'Прегледај',
     'Check the tags you want to delete'=>'Изабери тагове које желиш да избришеш',
     'Actions'=>'Акције',
-    'LOADING...'=>'УЧИТАВАМ...'
+    'LOADING...'=>'УЧИТАВАМ...',
+    'Tags'=>'Тагови'
 );

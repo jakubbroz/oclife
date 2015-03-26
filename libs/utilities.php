@@ -214,39 +214,31 @@ class utilities {
      * @param array $filesID IDs of the file to look at
      * @return array Associative array with required infos
      */
+    
     public static function getFileInfoFromID($user, $filesID) {
-        if(!is_array($filesID) || empty($filesID)) {
+        if(!is_array($filesID)) {
             return -1;
         }
-        $storage='home::'.$user;
-        $sql0="SELECT numeric_id from `*PREFIX*storages` where id LIKE '$storage'";
-        $query = \OCP\DB::prepare($sql0);
-        $row = $query->execute()->fetchRow();
-        $storage=intval($row['numeric_id']);
         
-       
-        $result = array();
-        $ids = "(".implode(',',$filesID).")"; 
-        $sql = "SELECT * FROM `*PREFIX*filecache` f LEFT JOIN `*PREFIX*share` s ON f.fileid=s.item_source  WHERE f.fileid IN $ids AND (f.storage=$storage OR s.share_with LIKE '$user')";
-            
-        $query = \OCP\DB::prepare($sql);
-        $resRsrc = $query->execute();
+        $usersFile = utilities::getFileList($user, '/files', false, true);
         
-        
-        while($row = $resRsrc->fetchRow()) {
-            $result[]= array(
-                    'fileid' =>intval($row['fileid']),
-                    'name' => ($row['name']),
-                    'size'=> intval($row['size']),
-                    'etag'=>intval($row['etag']),
-                    'date'=>intval($row['mtime']),
-                    'path' => ($row['path'])
-                );          
+        if($usersFile === -1) {
+            return -2;
         }
-  
+        
+        // Loop through the provided file ID and return all result
+        $result = array();
+        
+        foreach($filesID as $fileID) {
+            if(isset($usersFile[$fileID])) {
+                $result[$fileID] = $usersFile[$fileID];
+            }
+        }
         
         return $result;
     }
+    
+    
     
     /**
      * Prepare an image tile

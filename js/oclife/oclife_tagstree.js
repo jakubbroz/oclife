@@ -76,7 +76,7 @@ $(document).ready(function() {
                     type: "POST",
 
                     success: function( result ) {
-                        document.getElementById("loading").remove();
+                        loading.removeChild(document.getElementById("loading"));
                         $("#oclife_fileList").html(result);
 
                         if(result === '') {
@@ -550,7 +550,8 @@ $(document).ready(function() {
             type: "POST",
 
             success: function( result ) {
-                document.getElementById("loading").remove();
+                
+                loading.removeChild(document.getElementById("loading"));
                 $("#oclife_fileList").html(result);
 
                 if(result === '') {
@@ -903,6 +904,9 @@ $(document).ready(function() {
                         newNode.setActive(true);
 
                         updateStatusBar(t('oclife', 'Rename done!'));
+                        $(".fancytree-active").css("font-weight","bold");
+                        var node = $("#tagstree").fancytree("getRootNode");
+                        node.sortChildren(null, true);
                     } else if(resultData.result === 'NOTALLOWED' ) {
 			updateStatusBar(t('oclife', 'Unable to rename! Permission denied!'));
 		    } else {

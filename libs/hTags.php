@@ -212,6 +212,22 @@ class hTags {
 
         return $result;
     }
+    
+    public function getAllExistingTags($tagLang) {
+        $result = array();
+
+        // *PREFIX* is being replaced with the ownCloud installation prefix
+        $sql = "SELECT * FROM `*PREFIX*oclife_humanReadable` WHERE `lang`=? ORDER BY `tagid`";
+        $args = array($tagLang);
+
+        $query = \OCP\DB::prepare($sql);
+        $resRsrc = $query->execute($args);
+        while($row = $resRsrc->fetchRow()) {
+              $result[] = $row;           
+        }
+
+        return $result;
+    }
 
     /**
      * Returns tags starting with given string
@@ -762,23 +778,27 @@ class hTags {
      */
     public static function getTagsForFiles($fileIDs) {       
         $result = array();
-        
+        $group=\OCA\oclife\utilities::getGroupCompanion($user);
+        $user = \OCP\User::getUser();
+       
         foreach($fileIDs as $fileID) {
-           
-            $sql = 'SELECT count(*) as num FROM `*PREFIX*oclife_docTags` WHERE `fileid`=?';
+            $p=0;
+            $sql = "SELECT f.tagid as num FROM `*PREFIX*oclife_docTags` f JOIN `*PREFIX*oclife_tags` s ON f.tagid=s.id  WHERE `fileid`=?";
             $args = array($fileID);
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute($args);
-            $row = $resRsrc->fetchRow();
-            
-            if($row['num']==0){
-                $result[] = FALSE;
-            } else {
-                $result[] = TRUE;
-            }            
+            while($row = $resRsrc->fetchRow()) {
+                $a=\OCA\oclife\hTags::readAllowed($row['num']);
+                if($a) {
+                    $result[]=TRUE;
+                    $p=1;
+                    break;
+                }
+            }
+            if($p==0)
+            $result[]=FALSE;
             
         }
-
         return $result;
     }
 
