@@ -1,11 +1,17 @@
 var previewShown = false;
 
-$(document).ready(function() {
+window.addEventListener('unload', function(event) {
+        $.ajax({
+            url: OC.filePath('oclife', 'ajax', 'ClearMemcache.php'),
+            async: false,
+            success: function() {          
+            },
+            error: function() {           
+            }
+        });
+});
 
-    
-    
-    
-    //allFields = $([]).add(tagName);
+$(document).ready(function() {
      allFields = $([]).add(document.getElementById('tagName'));
     
     $("#tagstree").fancytree({
@@ -1153,7 +1159,17 @@ $(document).ready(function() {
     setTimeout(function() {
           var node = $("#tagstree").fancytree("getRootNode");
           node.sortChildren(null, true);
+           
     },250);
+    $.ajax({
+    url: OC.filePath('oclife', 'ajax', 'SetMemcache.php'),
+    async: false,
+    success: function() {          
+    },
+    error: function() {           
+    }
+    });
+   
 
 });
 

@@ -24,6 +24,8 @@ namespace OCA\oclife;
 
 
 class utilities {
+    
+   
     /**
      * Format a file size in human readable form
      * @param integer $bytes File size in bytes
@@ -102,20 +104,23 @@ class utilities {
     * @param boolean $indexed Output result as dictionary array with fileID as index
     * @return array ID of all the files
     */
-    public static function getFileList($user, $path = '', $onlyID = FALSE, $indexed = FALSE) {
+    public static function getFileList($user, $path = '') {
         $oc_version = $_SESSION['OC_Version'][0];
         
         if($oc_version === 7) {
-            $myres = \OCA\oclife\utilities::getOC7FileList($user, $path, $onlyID, $indexed);
+            $myres = \OCA\oclife\utilities::getOC7FileList($user, $path);
             return $myres;
         } else {
-            return \OCA\oclife\utilities::getOC6FileList($user, $path, $onlyID, $indexed);            
+            return \OCA\oclife\utilities::getOC6FileList($user, $path);            
         }
     }
     
-    private static function getOC6FileList($user, $path, $onlyID, $indexed) {
+    private static function getOC6FileList($user, $path) {
         $result = array();
 
+        $memcached=new \Memcache();
+        $memcached->addServer('localhost', 11211);
+        
         $dirView = new \OC\Files\View('/' . $user);
         $dirContent = $dirView->getDirectoryContent($path);
         
@@ -126,7 +131,7 @@ class utilities {
                 $fileData = array('fileid'=>$item['fileid'], 'name'=>$item['name'], 'mimetype'=>$item['mimetype']);
                 $fileData['path'] = isset($item['usersPath']) ? $item['usersPath'] : $item['path'];
                         
-                $itemRes[] = ($onlyID) ? $item['fileid'] : $fileData;
+                $itemRes[] = $fileData;
             } else {
                 // Case by case build appropriate path
                 if(isset($item['usersPath'])) {
@@ -140,37 +145,29 @@ class utilities {
                     $itemPath = 'files/' . $item['name'];
                 }
 
-                $itemRes = \OCA\oclife\utilities::getOC6FileList($user, $itemPath, $onlyID, $indexed);
+                $itemRes = \OCA\oclife\utilities::getOC6FileList($user, $itemPath);
             }            
             
-            foreach($itemRes as $item) {
-                if($onlyID) {
-                    $result[] = intval($item);
-                } else {
-                    if($indexed) {
-                        $result[intval($item['fileid'])] = $item;
-                    } else {
-                        $result[] = $item;
-                    }
-                }
+            foreach($itemRes as $item) {              
+                 $memcached->set(intval($item['fileid']), $item);  
             }
         }
 
         return $result;        
     }
 
-    private static function getOC7FileList($user, $path, $onlyID, $indexed) {
-        $result = array();
-
+    public static function getOC7FileList($user, $path) {
         $dirView = new \OC\Files\View('/' . $user);
         $dirContent = $dirView->getDirectoryContent($path);
+        
+        $memcached=new \Memcache();
+        $memcached->addServer('localhost', 11211);
         
         foreach($dirContent as $item) {
             $fileID = $item->getId();
             $fileMime = $item->getMimetype();
             $fileName = $item->getName();
             $fileDate=$item->getMTime();
-            $fileEtag=$item->getEtag();
             $fileSize= $item->getSize();
             $filePath = substr($item->getPath(), strlen($user) + 2);
             
@@ -182,30 +179,27 @@ class utilities {
                     'name' => $fileName,
                     'mimetype' => $fileMime,
                     'size'=> $fileSize,
-                    'etag'=>$fileEtag,
                     'date'=>$fileDate,
                     'path' => $filePath
                 );
                         
-                $itemRes[] = ($onlyID) ? $fileID : $fileData;
+                $itemRes[] = $fileData;
             } else {
-                $itemRes = \OCA\oclife\utilities::getOC7FileList($user, $filePath, $onlyID, $indexed);
+                $itemRes = \OCA\oclife\utilities::getOC7FileList($user, $filePath);
             }            
             
-            foreach($itemRes as $item) {
-                if($onlyID) {
-                    $result[] = intval($item);
-                } else {
-                    if($indexed) {
-                        $result[intval($item['fileid'])] = $item;
-                    } else {
-                        $result[] = $item;
-                    }
+            foreach($itemRes as $item) {               
+                 $memcached->set(intval($item['fileid']), $item);   
                 }
             }
         }
-
-        return $result;        
+    
+    
+    public static function clearMemcache(){
+        $memcashed=new \Memcache();
+        $memcashed->connect('localhost');
+        $memcashed->flush();
+        $memcashed->close();
     }
     
     /**
@@ -219,9 +213,7 @@ class utilities {
         if(!is_array($filesID)) {
             return -1;
         }
-        
-        $usersFile = utilities::getFileList($user, '/files', false, true);
-        
+       
         if($usersFile === -1) {
             return -2;
         }
@@ -229,9 +221,13 @@ class utilities {
         // Loop through the provided file ID and return all result
         $result = array();
         
+        $memcashed=new \Memcache();
+        $memcashed->connect('localhost');
+        
+        
         foreach($filesID as $fileID) {
-            if(isset($usersFile[$fileID])) {
-                $result[$fileID] = $usersFile[$fileID];
+            if(($a=$memcashed->get($fileID))!='') {
+                $result[$fileID] = $a;
             }
         }
         
