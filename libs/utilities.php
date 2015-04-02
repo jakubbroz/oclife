@@ -117,9 +117,6 @@ class utilities {
     
     private static function getOC6FileList($user, $path) {
         $result = array();
-
-        $memcached=new \Memcache();
-        $memcached->addServer('localhost', 11211);
         
         $dirView = new \OC\Files\View('/' . $user);
         $dirContent = $dirView->getDirectoryContent($path);
@@ -145,11 +142,21 @@ class utilities {
                     $itemPath = 'files/' . $item['name'];
                 }
 
+                
                 $itemRes = \OCA\oclife\utilities::getOC6FileList($user, $itemPath);
             }            
             
-            foreach($itemRes as $item) {              
-                 $memcached->set(intval($item['fileid']), $item);  
+            if(class_exists('Memcache')) {
+                $memcached=new \Memcache();
+                $memcached->addServer('localhost', 11211);    
+                foreach($itemRes as $item) {              
+                     $memcached->set(intval($item['fileid']), $item);  
+                }
+            }
+            else {
+                foreach($itemRes as $item) {
+                    $result[intval($item['fileid'])] = $item;
+                }
             }
         }
 
@@ -160,8 +167,7 @@ class utilities {
         $dirView = new \OC\Files\View('/' . $user);
         $dirContent = $dirView->getDirectoryContent($path);
         
-        $memcached=new \Memcache();
-        $memcached->addServer('localhost', 11211);
+        
         
         foreach($dirContent as $item) {
             $fileID = $item->getId();
@@ -188,18 +194,31 @@ class utilities {
                 $itemRes = \OCA\oclife\utilities::getOC7FileList($user, $filePath);
             }            
             
+            if(class_exists('Memcache')) {
+            $memcached=new \Memcache();
+            $memcached->addServer('localhost', 11211);
             foreach($itemRes as $item) {               
                  $memcached->set(intval($item['fileid']), $item);   
                 }
             }
+            else {
+               $result=array();
+               foreach($itemRes as $item) {               
+                    $result[intval($item['fileid'])] = $item;
+                }
+                return $result;
+            }
         }
+    }
     
     
     public static function clearMemcache(){
-        $memcashed=new \Memcache();
-        $memcashed->connect('localhost');
-        $memcashed->flush();
-        $memcashed->close();
+        if(class_exists('Memcache')){
+            $memcashed=new \Memcache();
+            $memcashed->connect('localhost');
+            $memcashed->flush();
+            $memcashed->close();
+        }
     }
     
     /**
@@ -213,21 +232,30 @@ class utilities {
         if(!is_array($filesID)) {
             return -1;
         }
-       
-        if($usersFile === -1) {
-            return -2;
-        }
         
         // Loop through the provided file ID and return all result
         $result = array();
         
-        $memcashed=new \Memcache();
-        $memcashed->connect('localhost');
-        
-        
-        foreach($filesID as $fileID) {
-            if(($a=$memcashed->get($fileID))!='') {
-                $result[$fileID] = $a;
+        if(class_exists('Memcache')) {
+            $memcashed=new \Memcache();
+            $memcashed->connect('localhost');
+            foreach($filesID as $fileID) {
+                if(($a=$memcashed->get($fileID))!='') {
+                    $result[$fileID] = $a;
+                }
+            }
+        }
+        else {
+            $usersFile = utilities::getFileList($user, '/files', false, true);
+            
+            if($usersFile === -1) {
+                return -2;
+            }
+            
+            foreach($filesID as $fileID) {
+                if(isset($usersFile[$fileID])) {
+                    $result[$fileID] = $usersFile[$fileID];
+                }
             }
         }
         
@@ -262,7 +290,7 @@ class utilities {
             else if(strcmp($ext,"mp3")==0 || strcmp($ext,"audio")==0 || strcmp($ext,"wav")==0 || strcmp($ext,"aac")==0 || strcmp($ext,"wma")==0){
                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/music.jpg'); 
             }
-            else if(strcmp($ext,"odt")==0 || strcmp($ext,"doc")==0 || strcmp($ext,"docx")==0 || strcmp($ext,"srt")==0 || strcmp($ext,"txt")==0 || strcmp($ext,"asa")==0) {
+            else if(strcmp($ext,"odt")==0 || strcmp($ext,"doc")==0 || strcmp($ext,"docx")==0 || strcmp($ext,"srt")==0 || strcmp($ext,"txt")==0 || strcmp($ext,"asa")==0 || strcmp($ext,"rtf")==0) {
                 $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/text.png');
             }
             else if(strcmp($ext,"mp4")==0 || strcmp($ext,"avi")==0 || strcmp($ext,"flv")==0 || strcmp($ext,"mpeg")==0 || strcmp($ext,"m4v")==0 || strcmp($ext,"mkv")==0) {

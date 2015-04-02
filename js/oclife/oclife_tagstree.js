@@ -28,7 +28,7 @@ $(document).ready(function() {
             var findResult = span.find("> span.fancytree-icon");
             findResult.css("backgroundImage", iconCSS);
             findResult.css("backgroundPosition", "0 0");
-            
+           
         },
 
         source: {
@@ -1158,16 +1158,18 @@ $(document).ready(function() {
     
     setTimeout(function() {
           var node = $("#tagstree").fancytree("getRootNode");
-          node.sortChildren(null, true);
+          node.sortChildren(null, true);     
            
     },250);
+    
+    
     $.ajax({
-    url: OC.filePath('oclife', 'ajax', 'SetMemcache.php'),
-    async: false,
-    success: function() {          
-    },
-    error: function() {           
-    }
+        url: OC.filePath('oclife', 'ajax', 'SetMemcache.php'),
+        async: false,
+        success: function() {          
+        },
+        error: function() {           
+        }
     });
    
 

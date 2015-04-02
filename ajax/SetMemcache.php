@@ -4,4 +4,4 @@
 \OCP\JSON::checkLoggedIn();
 \OCP\JSON::checkAppEnabled('oclife');
 
-\OCA\oclife\utilities::getOC7FileList(OCP\User::getUser(), '/files');
+\OCA\oclife\utilities::getFileList(OCP\User::getUser(), '/files');

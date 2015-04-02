@@ -128,7 +128,7 @@ $l = new \OC_L10N('oclife');
     </div>
     
     <div class="center" id="fileTable">
-        <p class="oclife_title"><?php p($l->t('Associated files')) ?><span style="float:right;margin-right: 3%;font-weight: normal;font-size: 9px">version:20150326-1</span></p>
+        <p class="oclife_title"><?php p($l->t('Associated files')) ?><span style="float:right;margin-right: 3%;font-weight: normal;font-size: 9px">version:20150402-1</span></p>
         <div id="oclife_fileList"></div>
         <div id="oclife_emptylist"><?php p($l->t('Select one or more tags to view the associated files.')) ?></div>
         
