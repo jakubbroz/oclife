@@ -228,7 +228,11 @@ function tagPermanent(n,m) {
 
 function postTagSing(niz,i) {
    var tbody=document.getElementById("fileList");
-   var tb= tbody.childNodes[i].childNodes[0].childNodes[2].childNodes[1].childNodes[1];               
+   var k;
+   if(tbody.childNodes[i].childNodes[0].childNodes[2].className=="name") k=2;
+   else k=3;
+   //var tb= tbody.childNodes[i].childNodes[0].childNodes[2].childNodes[1].childNodes[1];  
+   var tb=tbody.childNodes[i].childNodes[0].childNodes[k].childNodes[1].childNodes[1]
     if (niz == "") {
         tb.classList.remove("permanent");
         tb.style.position="";
@@ -237,34 +241,34 @@ function postTagSing(niz,i) {
     else {
         tb.classList.add("permanent");
         tb.style.position="relative";
-        if((tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || tbody.childNodes[i].getAttribute('data-mime')=="application/msword" || tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && tbody.childNodes[i].childNodes[0].childNodes[2].childNodes[1].childNodes[4].classList.length!=3) {
+        if((tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || tbody.childNodes[i].getAttribute('data-mime')=="application/msword" || tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && tbody.childNodes[i].childNodes[0].childNodes[k].childNodes[1].childNodes[4].classList.length!=3) {
                 tb.style.left="-370%";
         }
-        else if((tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || tbody.childNodes[i].getAttribute('data-mime')=="application/msword" || tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && tbody.childNodes[i].childNodes[0].childNodes[2].childNodes[1].childNodes[4].classList.length==3) {
+        else if((tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || tbody.childNodes[i].getAttribute('data-mime')=="application/msword" || tbody.childNodes[i].getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && tbody.childNodes[i].childNodes[0].childNodes[k].childNodes[1].childNodes[4].classList.length==3) {
                 tb.style.left="-100%";
         }
-        else if(tbody.childNodes[i].childNodes[0].childNodes[2].childNodes[1].childNodes[3].classList.length==3) {
+        else if(tbody.childNodes[i].childNodes[0].childNodes[k].childNodes[1].childNodes[3].classList.length==3) {
             tb.style.left="-63%";
         }
         else {
            tb.style.left="-270%";
         }
         tbody.childNodes[i].onmouseover = function () {
-            this.childNodes[0].childNodes[2].childNodes[1].childNodes[1].style.left = "0px";
+            this.childNodes[0].childNodes[k].childNodes[1].childNodes[1].style.left = "0px";
         }
 
         tbody.childNodes[i].onmouseout = function () {
-            if((this.getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || this.getAttribute('data-mime')=="application/msword" || this.getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && this.childNodes[0].childNodes[2].childNodes[1].childNodes[4].classList.length!=3) {
-                this.childNodes[0].childNodes[2].childNodes[1].childNodes[1].style.left="-350%";
+            if((this.getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || this.getAttribute('data-mime')=="application/msword" || this.getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && this.childNodes[0].childNodes[k].childNodes[1].childNodes[4].classList.length!=3) {
+                this.childNodes[0].childNodes[k].childNodes[1].childNodes[1].style.left="-350%";
             }
-            else if((this.getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || this.getAttribute('data-mime')=="application/msword" || this.getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && this.childNodes[0].childNodes[2].childNodes[1].childNodes[4].classList.length==3) {
-                this.childNodes[0].childNodes[2].childNodes[1].childNodes[1].style.left="-100%";
+            else if((this.getAttribute('data-mime')=="application/vnd.oasis.opendocument.text" || this.getAttribute('data-mime')=="application/msword" || this.getAttribute('data-mime')=="application/vnd.openxmlformats-officedocument.wordprocessingml.document") && this.childNodes[0].childNodes[k].childNodes[1].childNodes[4].classList.length==3) {
+                this.childNodes[0].childNodes[k].childNodes[1].childNodes[1].style.left="-100%";
             }   
-            else if (this.childNodes[0].childNodes[2].childNodes[1].childNodes[3].classList.length == 3) {
-                this.childNodes[0].childNodes[2].childNodes[1].childNodes[1].style.left = "-63%";
+            else if (this.childNodes[0].childNodes[k].childNodes[1].childNodes[3].classList.length == 3) {
+                this.childNodes[0].childNodes[k].childNodes[1].childNodes[1].style.left = "-63%";
             }
             else {
-                this.childNodes[0].childNodes[2].childNodes[1].childNodes[1].style.left = "-270%";
+                this.childNodes[0].childNodes[k].childNodes[1].childNodes[1].style.left = "-270%";
             }
         }
     }
