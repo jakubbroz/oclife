@@ -19,7 +19,15 @@
 
 div.oclife_toolbar {
     background-color: lightgray;
+    position: relative;
+    
 }
+
+div#content-wrapper {
+    overflow-y: hidden;
+}
+
+
 
 span.oclife_header {
     margin: 6px;
@@ -33,21 +41,30 @@ div.oclife_content {
 }
 
 div.west {
+    
     width: 25%;
     background-color: white;
     border: 1px solid gray;
     display: inline-block;
 }
 
-div.center {
+
+div#oclife_fileTable {
+    left: 309px; 
+    top: 0px;  
+    position: absolute;
     background-color: white;
     border: 1px solid gray;
     text-align: center;
+    
+    overflow-x:hidden;
     display: inline-block;
+    height: 95%;
+    width: 74.5%;
 }
 
 p.oclife_title {
-    width: 100%;
+    width: 97.8%;
     height: 25px;
     background-color: lightgray;
     padding: 2px 0px 2px 20px;

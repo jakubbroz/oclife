@@ -322,7 +322,7 @@ $(document).ready(function() {
     });
 
        
-    $("#fileTable").delegate(
+    $("#oclife_fileTable").delegate(
         "#Download",
         "mousedown",
         function() {
@@ -364,7 +364,7 @@ $(document).ready(function() {
     return rv;
 }
             
-     $("#fileTable").delegate(
+     $("#oclife_fileTable").delegate(
         ".oclife_tile",
         "mouseover",
         function() {
@@ -392,7 +392,7 @@ $(document).ready(function() {
         }
         });
         
-       $("#fileTable").delegate(
+       $("#oclife_fileTable").delegate(
         ".oclife_tile",
         "mouseout",
         function() {
@@ -405,7 +405,7 @@ $(document).ready(function() {
 
             
         
-        $('#fileTable').delegate(
+        $('#oclife_fileTable').delegate(
         "#download",
         "click",
         function() {
@@ -419,7 +419,7 @@ $(document).ready(function() {
         window.location.href="/owncloud/index.php/apps/files/ajax/download.php?dir="+p+"&files="+file;                
         });
         
-        $('#fileTable').delegate(
+        $('#oclife_fileTable').delegate(
         "#delete",
         "click",
         function() {
@@ -428,7 +428,7 @@ $(document).ready(function() {
         Nadji(fileID);
     });
         
-        $('#fileTable').delegate(
+        $('#oclife_fileTable').delegate(
         "#preview",
         "click",
         function() {
@@ -446,7 +446,7 @@ $(document).ready(function() {
         
         
         
-        $('#fileTable').delegate(
+        $('#oclife_fileTable').delegate(
         "#Delete",
         "mousedown",
         function() {
@@ -648,7 +648,7 @@ $(document).ready(function() {
             }
         }
         
-    $('#fileTable').delegate(
+    $('#oclife_fileTable').delegate(
         "#Preview",
         "mousedown",
         function() {
@@ -678,7 +678,7 @@ $(document).ready(function() {
             }
         }).resize();
 
-    $("#fileTable").delegate(
+    $("#oclife_fileTable").delegate(
         "#imagePreview",
         "click",
         function(eventData) {
@@ -1156,10 +1156,10 @@ $(document).ready(function() {
     });   
        
     
-    setTimeout(function() {
+    var b=setInterval(function() {
           var node = $("#tagstree").fancytree("getRootNode");
           node.sortChildren(null, true);     
-           
+          clearInterval(b);
     },250);
     
     

@@ -125,7 +125,7 @@ class utilities {
             $itemRes = array();
             
             if(strpos($item['mimetype'], 'directory') === FALSE) {
-                $fileData = array('fileid'=>$item['fileid'], 'name'=>$item['name'], 'mimetype'=>$item['mimetype']);
+                $fileData = array('fileid'=>$item['fileid'], 'name'=>$item['name'], 'mimetype'=>$item['mimetype'],'size'=>$item['size'],'date'=>$item['mtime']);
                 $fileData['path'] = isset($item['usersPath']) ? $item['usersPath'] : $item['path'];
                         
                 $itemRes[] = $fileData;

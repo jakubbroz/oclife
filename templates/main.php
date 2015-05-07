@@ -118,13 +118,13 @@
 </div>
 
 <div data-layout='{"type": "border", "hgap": 5, "vgap": 3}' class="oclife_content" id="oclife_content">
-    <div class="west" id="tagscontainer">
-        <div class="oclife_tagtree" id="tagstree">
+    <div class="west" id="tagscontainer" style="overflow-y:scroll;">
+        <div class="oclife_tagtree" style="height: 95%;" id="tagstree">
         </div>
     </div>
     
-    <div class="center" id="fileTable">
-        <p class="oclife_title"><?php p($l->t('Associated files')) ?><span style="float:right;margin-right: 3%;font-weight: normal;font-size: 9px">version:20150419-1</span></p>
+    <div class="cener" id="oclife_fileTable">
+        <p class="oclife_title"><?php p($l->t('Associated files')) ?><span style="float:right;margin-right: 3%;font-weight: normal;font-size: 9px">version:20150507-1</span></p>
         <div id="oclife_fileList"></div>
         <div id="oclife_emptylist"><?php p($l->t('Select one or more tags to view the associated files.')) ?></div>
         
