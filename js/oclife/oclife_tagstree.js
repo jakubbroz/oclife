@@ -1155,11 +1155,12 @@ $(document).ready(function() {
         }
     });   
        
-    
+    var broji=0;
     var b=setInterval(function() {
           var node = $("#tagstree").fancytree("getRootNode");
-          node.sortChildren(null, true);     
-          clearInterval(b);
+           broji++;
+           node.sortChildren(null, true);     
+           if(broji==5) clearInterval(b);
     },250);
     
     

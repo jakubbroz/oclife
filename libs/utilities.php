@@ -68,6 +68,7 @@ class utilities {
         return $result;
     }
     
+    
     /**
      * Rename thumbnail after file rename
      * @param array $params All parameters passed by hook
@@ -107,7 +108,7 @@ class utilities {
     public static function getFileList($user, $path = '') {
         $oc_version = $_SESSION['OC_Version'][0];
         
-        if($oc_version === 7) {
+        if($oc_version >= 7) {
             $myres = \OCA\oclife\utilities::getOC7FileList($user, $path);
             return $myres;
         } else {
@@ -168,7 +169,7 @@ class utilities {
         $dirContent = $dirView->getDirectoryContent($path);
         
         
-        
+         $result=array();
         foreach($dirContent as $item) {
             $fileID = $item->getId();
             $fileMime = $item->getMimetype();
@@ -202,13 +203,15 @@ class utilities {
                 }
             }
             else {
-               $result=array();
+              
                foreach($itemRes as $item) {               
                     $result[intval($item['fileid'])] = $item;
                 }
-                return $result;
+                
             }
+            
         }
+        return $result;
     }
     
     
@@ -246,7 +249,7 @@ class utilities {
             }
         }
         else {
-            $usersFile = utilities::getFileList($user, '/files', false, true);
+            $usersFile = utilities::getFileList($user, '/files');
             
             if($usersFile === -1) {
                 return -2;
@@ -400,6 +403,7 @@ class utilities {
 
         return $result;
     }
+    
 
     /**
      * Get all users in the indicated group
