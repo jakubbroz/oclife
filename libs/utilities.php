@@ -411,7 +411,7 @@ class utilities {
      * @param String $withDisplayName Get also display name if set to TRUE
      * @return Array All users belonging to indicated group
      */
-    public static function getUsers($user = NULL, $withDisplayName = FALSE) {
+    public static function getUsers($group = NULL, $withDisplayName = FALSE) {
         if(trim($group) === '' || $group === NULL) {
             $sql = 'SELECT `uid`, `displayname` FROM `*PREFIX*users` ORDER BY `displayname`';
             $query = \OCP\DB::prepare($sql);

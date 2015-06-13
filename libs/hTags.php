@@ -990,7 +990,7 @@ class hTags {
 
         // Check for tags owned by group's companion where $user belongs to
         if(substr($permission, 2, 1) === 'r') {
-            $userCompanion = \OCA\oclife\utilities::getUsers($user);
+            $userCompanion = \OCA\oclife\utilities::getGroupCompanion($user);
             $groupPos = in_array($owner, $userCompanion);
 
             return ($groupPos === FALSE) ? FALSE : TRUE;

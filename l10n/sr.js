@@ -81,10 +81,10 @@ OC.L10N.register("oclife",{
     'Yes' : 'Да',
     'No' : 'Не',
     'Unencrypted size' : 'Некриптована величина: ',
+// new
     'Folders must not be tagged!' : 'Фолдери не могу бити таговани!',
     'Unable to remove the tag! Permission denied.' : 'Није могуће уклонити таг! Немате дозволу!',
     'Unable to add the tag! Permission denied.':'Није могуће додати таг! Немате дозволу!',
-// new
     'already exists' : 'Већ постоји',
     'Tag':'Таг',
     'Download':'Преузми',

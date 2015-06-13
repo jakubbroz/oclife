@@ -94,5 +94,17 @@ OC.L10N.register("oclife",{
     "Encrypted? ": "Verschluesselt? ",
     "Yes": "Ja",
     "No": "Nein",
-    "Unencrypted size": "Unverschl\u00fcsselte Dateigr\u00f6sse"
+    "Unencrypted size": "Unverschl\u00fcsselte Dateigr\u00f6sse",
+    "Folders must not be tagged!" : 'Ordner dürfen nicht mit Tags versehen werden!',
+    'Unable to remove the tag! Permission denied.' : 'Tag konnte nicht entfernt werden - fehlende Berechtigung!',
+    'Unable to add the tag! Permission denied.': 'Tag konnte nicht hinzugefügt werden - fehlende Berechtigung!',
+    'already exists' : 'bereits vorhanden',
+    'Tag': 'Tag',
+    'Download': 'Herunterladen',
+    'Delete tag': 'Tag löschen',
+    'Preview': 'Vorschau',
+    'Check the tags you want to delete': 'Kontrolliere die zu löschenden Tags',
+    'Actions': 'Aktionen',
+    'LOADING...': 'Lade...',
+    'Tags': 'Tags'
 })
