@@ -31,7 +31,8 @@ $filePath = filter_input(INPUT_POST, 'filePath', FILTER_SANITIZE_STRING);
 // Check if multiple file has been choosen
 if(substr($filePath, -1) === '/') {
     $thumbPath = OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
-    $preview = '<img style="border: 1px solid black; display: block;" src="' . $thumbPath . '" />';
+    
+    $preview = '<img style="border: 1px solid black;width:200px;height:200px; display: block;" src="' . $thumbPath . '" />';
     
     $infos = '<strong>' . $l->t('Multiple files selected') . '</strong>';
 
@@ -61,18 +62,45 @@ if(substr($filePath, -1) === '/') {
  */
 $fileInfos = \OC\Files\Filesystem::getFileInfo($filePath);
 
-$thumbPath = OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
-$preview = '<img style="border: 1px solid black; display: block;" src="' . $thumbPath . '" />';
+$exts = preg_split("/[\.]/", $fileInfos['name']);
+$n    = count($exts)-1;
+$ext  = strtolower($exts[$n]);
+
+if(strcmp($ext,"pdf")==0) {              
+    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/PDFLogo.jpg');
+}
+else if(strcmp($ext,"xls")==0 || strcmp($ext,"xlsx")==0) {
+   $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/xls.png');}
+else if(strcmp($ext,"mp3")==0 || strcmp($ext,"audio")==0 || strcmp($ext,"wav")==0 || strcmp($ext,"aac")==0 || strcmp($ext,"wma")==0){
+   $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/music.jpg'); 
+}
+else if(strcmp($ext,"odt")==0 || strcmp($ext,"doc")==0 || strcmp($ext,"docx")==0 || strcmp($ext,"srt")==0 || strcmp($ext,"txt")==0 || strcmp($ext,"asa")==0 || strcmp($ext,"rtf")==0) {
+    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/text.png');
+}
+else if(strcmp($ext,"mp4")==0 || strcmp($ext,"avi")==0 || strcmp($ext,"flv")==0 || strcmp($ext,"mpeg")==0 || strcmp($ext,"m4v")==0 || strcmp($ext,"mkv")==0) {
+    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/video.png');
+}
+else if(strcmp($ext,"ppt")==0 || strcmp($ext,"pptx")==0)  {
+        $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/presentacion.jpg');
+}
+else if(strcmp($ext,"zip")==0 || strcmp($ext,"7z")==0 || strcmp($ext,"rar")==0 || strcmp($ext,"tar.gz")==0 || strcmp($ext,"tar")==0) {
+        $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/zip.jpg');
+}
+else {
+$thumbPath = \OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
+}
+
+$preview = '<img style="border: 1px solid black;width:200px;height:200px; display: block;" src="' . $thumbPath . '" />';
 
 $infos = array();
 $infos[] = '<strong>' . $l->t('File name') . ': </strong>' . $fileInfos['name'];
 $infos[] = '<strong>MIME: </strong>' . $fileInfos['mimetype'];
-$infos[] = '<strong>' . $l->t('Size') . ': </strong>' . \OCA\OCLife\utilities::formatBytes($fileInfos['size'], 2, TRUE);
+$infos[] = '<strong>' . $l->t('Size') . ': </strong>' . \OCA\oclife\utilities::formatBytes($fileInfos['size'], 2, TRUE);
 $infos[] = '<strong>' . $l->t('When added') . ': </strong>' . \OCP\Util::formatDate($fileInfos['storage_mtime']);
 $infos[] = '<strong>' . $l->t('Encrypted? ') . '</strong>' . (($fileInfos['encrypted'] === TRUE) ? $l->t('Yes') : $l->t('No'));
 
 if($fileInfos['encrypted']) {
-    $infos[] = '<strong>' . $l->t('Unencrypted size') . ': </strong>' . \OCA\OCLife\utilities::formatBytes($fileInfos['unencrypted_size'], 2, TRUE);
+    $infos[] = '<strong>' . $l->t('Unencrypted size') . ': </strong>' . \OCA\oclife\utilities::formatBytes($fileInfos['unencrypted_size'], 2, TRUE);
 }
 
 // Output basic infos
@@ -85,7 +113,7 @@ $viewPath = '/' . $user . '/files';
 $view = new \OC\Files\View($viewPath);
 $imageLocalPath = $view->getLocalFile($filePath);
 
-$exifHandler = new OCA\OCLife\exifHandler($imageLocalPath);
+$exifHandler = new OCA\oclife\exifHandler($imageLocalPath);
 $allInfos = $exifHandler->getExifData();
 $ifd0Infos = isset($allInfos['IFD0']) ? $allInfos['IFD0'] : array();
 $exifInfos = isset($allInfos['EXIF']) ? $allInfos['EXIF'] : array();
@@ -93,7 +121,7 @@ $exifInfos = isset($allInfos['EXIF']) ? $allInfos['EXIF'] : array();
 $fullInfoArray = array_merge($ifd0Infos, $exifInfos);
 
 if(is_array($fullInfoArray)) {
-    $extInfoText = OCA\OCLife\utilities::glueArrayHTML($fullInfoArray);
+    $extInfoText = OCA\oclife\utilities::glueArrayHTML($fullInfoArray);
 } else {
     $extInfoText = '';
 }

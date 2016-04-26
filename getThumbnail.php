@@ -60,7 +60,7 @@ if(substr($filePath, -1) === '/') {
 
         // Check if thumbnail exist, create it otherwise
         if(!file_exists($thumbPath)) {
-            $imgHandler = new \OCA\OCLife\ImageHandler();
+            $imgHandler = new \OCA\oclife\ImageHandler();
             $imgHandler->setHeight(320);
             $imgHandler->setWidth(320);
             $imgHandler->setBgColorFromValues(0, 0, 0);

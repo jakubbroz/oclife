@@ -21,20 +21,22 @@
 \OCP\JSON::checkLoggedIn();
 \OCP\JSON::checkAppEnabled('oclife');
 
-$ctags = new \OCA\OCLife\hTags();
+$ctags = new \OCA\oclife\hTags();
 $tagData = $ctags->getAllTags('xx');
 
 $searchKey = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
+
 
 $result = array();
 
 foreach($tagData as $tag) {
     if($tag['tagid'] !== '-1') {
         if(is_null($searchKey) || $searchKey === FALSE || $searchKey === '') {
-            $result[] = new \OCA\OCLife\tag($tag['tagid'], $tag['descr']);
+            $result[] = new \OCA\oclife\tag($tag['tagid'], $tag['descr']);
         } else {
-            if(strpos($tag['descr'], $searchKey) !== FALSE) {
-                $result[] = new \OCA\OCLife\tag($tag['tagid'], $tag['descr']);
+            //ubaceno strtolower zbog case sensitiva
+            if(strpos(strtolower($tag['descr']), strtolower($searchKey)) !== FALSE) {
+                $result[] = new \OCA\oclife\tag($tag['tagid'], $tag['descr']);
             }
         }
     }

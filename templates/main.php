@@ -16,7 +16,7 @@
         <option value='' disabled='disabled' selected='selected'><?php p($l->t('Not set')) ?></option>
         
         <?php
-            $usersList = \OCA\OCLife\utilities::getUsers(NULL, TRUE);
+            $usersList = \OCA\oclife\utilities::getUsers(NULL, TRUE);
             foreach($usersList as $uid => $userName) {
                 printf("<option value='%s'>%s</option>'", $uid, is_null($userName) ? $uid : $userName);
             }
@@ -41,6 +41,28 @@
         <option value="AllRO"><?php p($l->t('Read only')) ?></option>
         <option value="AllRW"><?php p($l->t('Can modify')) ?></option>
     </select>
+    
+    <div style="float:right">
+        <div class="onoffswitch">
+            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+            <label class="onoffswitch-label" for="myonoffswitch">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+            </label>
+        </div>
+    </div>
+    
+    <div style="float:right">
+        <div class="andorswitch">
+            <input type="checkbox" name="andorswitch" class="andorswitch-checkbox" id="myandorswitch" checked>
+            <label class="andorswitch-label" for="myandorswitch">
+                <span class="andorswitch-inner"></span>
+                <span class="andorswitch-switch"></span>
+            </label>   
+        </div>
+    </div>
+    
+    
 </div>
 
 <div id="renameTag" title="<?php p($l->t('Rename tag')) ?>">
@@ -60,6 +82,15 @@
             <input type="text" name="newTagName" style="width: 300px;" id="newTagName" class="text ui-widget-content ui-corner-all" />
             <input type="hidden" name="parentID" id="parentID" value="-1" />
         </fieldset>
+    </form>
+</div>
+
+
+<div id="ObrisiIh" title="<?php p($l->t('Check the tags you want to delete')) ?>">
+    <form>
+        <ul id="lista">
+            
+        </ul>
     </form>
 </div>
 
@@ -86,14 +117,15 @@
 </div>
 
 <div data-layout='{"type": "border", "hgap": 5, "vgap": 3}' class="oclife_content" id="oclife_content">
-    <div class="west" id="tagscontainer">
-        <div class="oclife_tagtree" id="tagstree">
+    <div class="west" id="tagscontainer" style="overflow-y:scroll;">
+        <div class="oclife_tagtree" style="height: 95%;" id="tagstree">
         </div>
     </div>
     
-    <div class="center" id="fileTable">
-        <p class="oclife_title"><?php p($l->t('Associated files')) ?></p>
+    <div class="cener" id="oclife_fileTable">
+        <p class="oclife_title"><?php p($l->t('Associated files')) ?><span style="float:right;margin-right: 3%;font-weight: normal;font-size: 9px">version:20150613-1</span></p>
         <div id="oclife_fileList"></div>
         <div id="oclife_emptylist"><?php p($l->t('Select one or more tags to view the associated files.')) ?></div>
+        
     </div>
 </div>

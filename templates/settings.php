@@ -1,4 +1,3 @@
-<?php
     $oc_version = $_SESSION['OC_Version'][0];
 
     if($oc_version >= 7) {
@@ -19,6 +18,6 @@
 </form>
 
 <?php
-    if($oc_version === 7) {
+    if($oc_version >= 7) {
         print '</div>';
     }

@@ -23,7 +23,7 @@
  *
  * @author fpiraneo
  */
-namespace OCA\OCLife;
+namespace OCA\oclife;
 class tag {
     public $value;
     public $label;

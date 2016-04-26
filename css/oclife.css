@@ -19,7 +19,15 @@
 
 div.oclife_toolbar {
     background-color: lightgray;
+    position: relative;
+    
 }
+
+div#content-wrapper {
+    overflow-y: hidden;
+}
+
+
 
 span.oclife_header {
     margin: 6px;
@@ -33,21 +41,30 @@ div.oclife_content {
 }
 
 div.west {
+    
     width: 25%;
     background-color: white;
     border: 1px solid gray;
     display: inline-block;
 }
 
-div.center {
+
+div#oclife_fileTable {
+    left: 309px; 
+    top: 0px;  
+    position: absolute;
     background-color: white;
     border: 1px solid gray;
     text-align: center;
+    
+    overflow-x:hidden;
     display: inline-block;
+    height: 95%;
+    width: 74.5%;
 }
 
 p.oclife_title {
-    width: 100%;
+    width: 97.8%;
     height: 25px;
     background-color: lightgray;
     padding: 2px 0px 2px 20px;
@@ -71,13 +88,23 @@ div.oclife_tile {
     border: 1px solid darkgray;
     float: left;
     margin: 1px;
-    overflow: hidden;
+    //overflow: hidden;
 }
 
 div.oclife_tile:hover {
     border-color: black;
     background-color: lightgray;
 }
+
+#Download:hover,#Preview:hover,#Delete:hover {
+    color:white;
+}
+
+#lista {
+    color:black;
+   
+}
+
 
 .oclife_tile div {
     width: 100%;
@@ -98,4 +125,235 @@ div.oclife_tile:hover {
     z-index: 0;
     width:200px; 
     height: auto;
+}
+
+
+
+
+
+.onoffswitch {
+    position: relative; width: 90px; margin-top: 2px; margin-right: 5px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+.onoffswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+    content: "LIST";
+    padding-left: 10px;
+    background-color: #1d2d44; color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+    content: "GRID";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: rgb(136, 136, 136);
+    text-align: right;
+}
+.onoffswitch-switch {
+    display: block; width: 18px; margin: 6px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 20px;
+    position: absolute; top: 0; bottom: 0; right: 56px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s; 
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px; 
+}
+
+.andorswitch {
+    position: relative; width: 90px; margin-top: 2px; margin-right: 5px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.andorswitch-checkbox {
+    display: none;
+}
+.andorswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+.andorswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+.andorswitch-inner:before, .andorswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+.andorswitch-inner:before {
+    content: "OR";
+    padding-left: 10px;
+    background-color: #1d2d44; color: #FFFFFF;
+}
+.andorswitch-inner:after {
+    content: "AND";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: rgb(136, 136, 136);
+    text-align: right;
+}
+.andorswitch-switch {
+    display: block; width: 18px; margin: 6px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 20px;
+    position: absolute; top: 0; bottom: 0; right: 56px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s; 
+}
+.andorswitch-checkbox:checked + .andorswitch-label .andorswitch-inner {
+    margin-left: 0;
+}
+.andorswitch-checkbox:checked + .andorswitch-label .andorswitch-switch {
+    right: 0px; 
+}
+.CSSTableGenerator {
+	margin:0px;padding:0px;
+	width:100%;
+	border-bottom:1px solid #000000;
+	border-top:1px solid #000000;
+       border-left: none;
+        border-right: none;
+	table-layout: fixed;
+        -moz-border-radius-bottomleft:0px;
+	-webkit-border-bottom-left-radius:0px;
+	border-bottom-left-radius:0px;
+	
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-bottom-right-radius:0px;
+	
+	-moz-border-radius-topright:0px;
+	-webkit-border-top-right-radius:0px;
+	border-top-right-radius:0px;
+	
+	-moz-border-radius-topleft:0px;
+	-webkit-border-top-left-radius:0px;
+	border-top-left-radius:0px;
+}.CSSTableGenerator table{
+    table-layout: fixed;
+    border-collapse: collapse;
+        border-spacing: 0;
+	width:100%;
+	height:100%;
+	margin:0px;padding:0px;
+}.CSSTableGenerator tr:last-child td:last-child {
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-bottom-right-radius:0px;
+}
+.CSSTableGenerator table tr:first-child td:first-child {
+	-moz-border-radius-topleft:0px;
+	-webkit-border-top-left-radius:0px;
+	border-top-left-radius:0px;
+}
+.CSSTableGenerator table tr:first-child td:last-child {
+	-moz-border-radius-topright:0px;
+	-webkit-border-top-right-radius:0px;
+	border-top-right-radius:0px;
+}.CSSTableGenerator tr:last-child td:first-child{
+	-moz-border-radius-bottomleft:0px;
+	-webkit-border-bottom-left-radius:0px;
+	border-bottom-left-radius:0px;
+}
+
+.CSSTableGenerator tr:nth-child(odd){ background-color:#ffaa56; }
+.CSSTableGenerator tr:nth-child(even)    { background-color:#ffffff; }.CSSTableGenerator td{
+	vertical-align:middle;
+	
+	
+	border-bottom:1px solid #000000;
+	border-top:1px solid #000000;
+       border-left: none;
+        border-right: none;
+	border-width:0px 1px 1px 0px;
+	text-align:left;
+	padding:10px;
+	font-size:10px;
+	font-family:Arial;
+	font-weight:normal;
+	color:#000000;
+}.CSSTableGenerator tr:last-child td{
+	border-width:0px 1px 0px 0px;
+}.CSSTableGenerator tr td:last-child{
+	border-width:0px 0px 1px 0px;
+}.CSSTableGenerator tr:last-child td:last-child{
+	border-width:0px 0px 0px 0px;
+}
+.CSSTableGenerator tr:first-child td{
+		background:-o-linear-gradient(bottom, #ff7f00 5%, #bf5f00 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ff7f00), color-stop(1, #bf5f00) );
+	background:-moz-linear-gradient( center top, #ff7f00 5%, #bf5f00 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff7f00", endColorstr="#bf5f00");	background: -o-linear-gradient(top,#ff7f00,bf5f00);
+
+	background-color:#ff7f00;
+	border-bottom:0px solid #000000;
+	border-top:0px solid #000000;
+       border-left: none;
+        border-right: none;
+	text-align:center;
+	border-width:0px 0px 1px 1px;
+	font-size:14px;
+	font-family:Arial;
+	font-weight:bold;
+	color:#ffffff;
+}
+.CSSTableGenerator tr:first-child:hover td{
+	background:-o-linear-gradient(bottom, #ff7f00 5%, #bf5f00 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ff7f00), color-stop(1, #bf5f00) );
+	background:-moz-linear-gradient( center top, #ff7f00 5%, #bf5f00 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff7f00", endColorstr="#bf5f00");	background: -o-linear-gradient(top,#ff7f00,bf5f00);
+
+	background-color:#ff7f00;
+}
+.CSSTableGenerator tr:first-child td:first-child{
+	border-width:0px 0px 1px 0px;
+}
+.CSSTableGenerator tr:first-child td:last-child{
+	border-width:0px 0px 1px 1px;
+}
+
+
+#kraj{
+    text-align: center;
+}
+
+#sivo {
+    margin-left: 35%;
+    text-align: center;
+    background-color: grey;
+    margin-top: 3px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 1;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-box-shadow: 0 1px 3px #999;
+    -webkit-box-shadow: 0 1px 3px #999;
+    text-shadow: 0 -1px 1px #222;
+    border-bottom: 1px solid #222;
+    position: relative;
+    cursor: pointer;
+}
+
+#loading {
+    text-align: center;
+    font-size: 30px;
+    margin:40%;
 }

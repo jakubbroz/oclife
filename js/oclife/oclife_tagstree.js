@@ -1,18 +1,34 @@
 var previewShown = false;
 
+window.addEventListener('unload', function(event) {
+        $.ajax({
+            url: OC.filePath('oclife', 'ajax', 'ClearMemcache.php'),
+            async: false,
+            success: function() {          
+            },
+            error: function() {           
+            }
+        });
+});
+
 $(document).ready(function() {
-    allFields = $([]).add(tagName);
+     allFields = $([]).add(document.getElementById('tagName'));
     
     $("#tagstree").fancytree({
         extensions: ["dnd"],
 
         renderNode: function(event, data) {
             var iconCSS = getItemIcon(data.node.data.permission);
-
             var span = $(data.node.span);
+            if(data.key!="_statusNode")
+            if(data.node.data.owner==document.getElementById("expandDisplayName").outerText) {
+                var findResult = span.find("> span.fancytree-title");
+                span.css("font-weight","bold");
+            }
             var findResult = span.find("> span.fancytree-icon");
             findResult.css("backgroundImage", iconCSS);
             findResult.css("backgroundPosition", "0 0");
+           
         },
 
         source: {
@@ -50,30 +66,42 @@ $(document).ready(function() {
             }
 
             var tags = JSON.stringify(selNodesData);
+            if(tags.length>2) {    
+                var loading=document.getElementById("oclife_fileList");
+                var load=t('oclife','LOADING...');
+                loading.innerHTML="<div id='loading'>"+load+"</div>";
 
-            $.ajax({
-                url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+                $.ajax({
+                    url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
 
-                data: {
-                    tags: tags
-                },
+                    data: {
+                        tags: tags,
+                        listgrid: $("#myonoffswitch")[0].checked,
+                        andor:$("#myandorswitch")[0].checked
+                    },
 
-                type: "POST",
+                    type: "POST",
 
-                success: function( result ) {
-                    $("#oclife_fileList").html(result);
+                    success: function( result ) {
+                        loading.removeChild(document.getElementById("loading"));
+                        $("#oclife_fileList").html(result);
 
-                    if(result === '') {
-                        $("#oclife_emptylist").css("display", "block");
-                    } else {
-                        $("#oclife_emptylist").css("display", "none");
+                        if(result === '') {
+                            $("#oclife_emptylist").css("display", "block");
+                        } else {
+                            $("#oclife_emptylist").css("display", "none");
+                        }
+                    },
+
+                    error: function( xhr, status ) {
+                        updateStatusBar(t('oclife', 'Unable to get files list!'));
                     }
-                },
-
-                error: function( xhr, status ) {
-                    updateStatusBar(t('oclife', 'Unable to get files list!'));
-                }
-            });
+                });
+            }
+            else {
+                $("#oclife_fileList").html("");
+            }   
+        
         },
 
         dnd: {
@@ -155,9 +183,15 @@ $(document).ready(function() {
             if(node !== null) {
                 nodeKey = node.key;
             }
+            if(node==null) {
+              node = $("#tagstree").fancytree("getRootNode");
+            }
 
-            newTagName.value = "";
-            parentID.value = nodeKey;
+           // newTagName.value = "";
+            document.getElementById('newTagName').value = "";
+           // parentID.value = nodeKey;
+            document.getElementById('parentID').value = nodeKey;
+           
 
             $( "#createTag" ).dialog( "open" );
             $(this).closest('.ui-dialog').find('.ui-dialog-buttonpane button:eq(0)').focus();
@@ -208,8 +242,9 @@ $(document).ready(function() {
                 return;
             }
             $("#tagToDelete").text(node.title);
-            deleteID.value = node.key;
-
+            //deleteID.value = node.key;
+            document.getElementById('deleteID').value=node.key; 
+            
             $( "#deleteConfirm" ).dialog( "open" );
             $(this).closest('.ui-dialog').find('.ui-dialog-buttonpane button:eq(0)').focus();
         });
@@ -270,7 +305,13 @@ $(document).ready(function() {
                 
                 if(resultData.result === 'OK') {
                     updateStatusBar(t('oclife', 'Owner changed successfully!'));
-                } else if(result === 'NOTALLOWED') {
+                    if(newOwner==$("#expandDisplayName")[0].innerText) {
+                        $(".fancytree-active")[0].style.fontWeight="bold";
+                    } else {
+                        $(".fancytree-active")[0].style.fontWeight="normal";
+                    }
+                    
+                } else if(resultData.result === 'NOTALLOWED') {
                     updateStatusBar(t('oclife', 'Owner not changed! Permission denied!'));
                 } else {
                     updateStatusBar(t('oclife', 'Owner not changed! Data base error!'));
@@ -282,15 +323,356 @@ $(document).ready(function() {
         });
     });
 
-    $("#fileTable").delegate(
-        ".oclife_tile",
-        "click",
-        function(eventData) {
-            var fileID = $(this).attr("data-fileid");
-            var filePath = $(this).attr("data-fullPath");
-
-            showPreview(filePath);
+       
+    $("#oclife_fileTable").delegate(
+        "#Download",
+        "mousedown",
+        function() {
+        var filePath = $(this).parent().attr("data-fullPath");
+        var spliter=filePath;
+        var dir=spliter.split("/");
+        var file=dir[dir.length-1];
+        spliter=filePath.substring((filePath.length-file.length),0);
+        var p=spliter.split('/').join("%2F");
+        
+        window.location.href="/owncloud/index.php/apps/files/ajax/download.php?dir="+p+"&files="+file;                
+        
         });
+        
+        
+         $down=$("<div id='Download' style='width:100%;background-color:red;position:relative;top:-228px;display:hidden'>"+t('oclife','Download')+"</div>");
+         $del=$("<div id='Delete' style='width:100%;background-color:blue;position:relative;top:-228px;display:hidden'>"+t('oclife','Delete tag')+"</div>");        
+         $preview=$("<div id='Preview' style='width:100%;background-color:purple;position:relative;top:-228px;display:hidden'>"+t('oclife','Preview')+"</div>");        
+         $pom4=null;
+         $pom6=null;
+         
+    function getInternetExplorerVersion(){
+
+    var rv = - 1;
+    if (navigator.appName == 'Microsoft Internet Explorer')
+    {
+        var ua = navigator.userAgent;
+        var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+            rv = parseFloat(RegExp.$1);
+    }
+    else if (navigator.appName == 'Netscape')
+    {
+        var ua = navigator.userAgent;
+        var re = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+            rv = parseFloat(RegExp.$1);
+    }
+    return rv;
+}
+            
+     $("#oclife_fileTable").delegate(
+        ".oclife_tile",
+        "mouseover",
+        function() {
+            var filePath = $(this).attr("data-fullPath");
+            var nesto=filePath.split(".");
+            var extension=nesto[nesto.length-1].toLowerCase();
+            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff" || (extension=="pdf" && getInternetExplorerVersion()==-1))               
+             { 
+                $down[0].innerHTML = t('oclife', 'Download');
+                    $del[0].innerHTML = t('oclife', 'Delete tag');
+                    $preview[0].innerHTML = t('oclife', 'Preview');
+                    $down.appendTo($(this));
+                    $preview.appendTo($(this));
+                    $del.appendTo($(this));
+                    $down.css({"visibility": "visible"});
+                    $del.css({"visibility": "visible"});
+                    $preview.css({"visibility": "visible"});             
+            }
+        
+        else {                     
+            $down.appendTo($(this));
+            $del.appendTo($(this));
+            $down.css({"visibility":"visible"});
+            $del.css({"visibility":"visible"});
+        }
+        });
+        
+       $("#oclife_fileTable").delegate(
+        ".oclife_tile",
+        "mouseout",
+        function() {
+           
+            $down.css({"visibility":"hidden"});
+            $del.css({"visibility":"hidden"});
+            $preview.css({"visibility":"hidden"});
+            });
+           
+
+            
+        
+        $('#oclife_fileTable').delegate(
+        "#download",
+        "click",
+        function() {
+        var filePath = $(this).parent().attr("filepath");
+       var spliter=filePath;
+        var dir=spliter.split("/");
+        var file=dir[dir.length-1];
+        spliter=filePath.substring((filePath.length-file.length),0);
+        var p=spliter.split('/').join("%2F");
+        
+        window.location.href="/owncloud/index.php/apps/files/ajax/download.php?dir="+p+"&files="+file;                
+        });
+        
+        $('#oclife_fileTable').delegate(
+        "#delete",
+        "click",
+        function() {
+        var fileID = $(this).parent().attr("fileid");
+        $pom6=fileID;
+        Nadji(fileID);
+    });
+        
+        $('#oclife_fileTable').delegate(
+        "#preview",
+        "click",
+        function() {
+        var filePath = $(this).parent().attr("filePath");
+            var nesto=filePath.split(".");
+            var extension=nesto[nesto.length-1].toLowerCase();
+            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff") {
+                showPreview(filePath);
+            }  
+            if(extension=="pdf") {
+                    showPDFviewerPom("%2F",filePath);
+            }
+        });
+        
+        
+        
+        
+        $('#oclife_fileTable').delegate(
+        "#Delete",
+        "mousedown",
+        function() {
+        
+        var fileID = $(this).parent().attr("data-fileid");
+        $pom6=fileID;
+        Nadji(fileID);
+                 
+        });
+        
+        
+        function Nadji(fileID) {
+                      
+        $.ajax({
+            url: OC.filePath('oclife', 'ajax', 'getTagsForFile.php'),
+            async: false,
+            timeout: 2000,
+
+        data: {
+            id: fileID
+        },
+
+        success: function(result) {
+            var niz = null;
+            var niz = JSON.parse(result);
+            var i = 0;
+            $pom5 = document.getElementById("lista");
+            $pom5.innerHTML = "";
+            while (i < niz.length) {
+                if(niz[i].write) {
+                    $pom4 = ($("<li id='listali' style='list-style-type: none;margin-left:40%;' ><input type='checkbox' /><input type='hidden' value='" + niz[i].value + "'/>" + niz[i].label + "</li>"));
+                    $pom4.appendTo($pom5);           
+                }
+                else if(niz[i].read) {
+                    $pom4 = ($("<li id='listali' style='color:red;list-style-type: none;margin-left:40%;' ><input type='hidden' value='" + niz[i].value + "'/>" + niz[i].label + "</li>"));
+                    $pom4.appendTo($pom5);
+                    }
+                i++;
+            }
+
+            $("#ObrisiIh").dialog("open");
+        },
+
+        error: function (xhr, status) {
+            window.alert(t('oclife', 'Unable to get actual tags for this document! Ajax error!'));
+        },
+
+        type: "POST"});
+        }
+        
+        
+        $( "#ObrisiIh" ).dialog({
+        autoOpen: false,
+        height: 200,
+        width: 300,
+        modal: true,
+        resizable: false,
+        buttons: {
+            Confirm: {
+                text: t('oclife', 'Confirm'),
+                click: function() {
+                    Obrisi();
+                   $( this ).dialog( "close" );
+                }
+            },
+
+            Cancel: {
+                text: t('oclife', 'Cancel'),
+                click: function() {
+                    $( this ).dialog( "close" );
+                }
+            }
+        },
+
+        close: function() {
+            allFields.val("").removeClass( "ui-state-error" );
+        }
+    });
+    
+    function switchevi() {
+         var selectedNodes = $("#tagstree").fancytree("getTree").getSelectedNodes();
+         var selNodesData = new Array();
+
+        for(i = 0; i < selectedNodes.length; i++) {
+            var nodeData = new Object();
+            nodeData.key = selectedNodes[i].key;
+            nodeData.title = selectedNodes[i].title;
+
+            selNodesData.push(nodeData);
+        }
+
+        var tags = JSON.stringify(selNodesData);
+       
+        if(tags.length>2) {
+        var loading=document.getElementById("oclife_fileList");
+        var load=t('oclife','LOADING...');
+        loading.innerHTML="<div id='loading'>"+load+"</div>";
+            $.ajax({
+            url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+
+            data: {
+                tags: tags,
+                listgrid: $("#myonoffswitch")[0].checked,
+                andor:$("#myandorswitch")[0].checked
+            },
+
+            type: "POST",
+
+            success: function( result ) {
+                
+                loading.removeChild(document.getElementById("loading"));
+                $("#oclife_fileList").html(result);
+
+                if(result === '') {
+                    $("#oclife_emptylist").css("display", "block");
+                } else {
+                    $("#oclife_emptylist").css("display", "none");
+                }
+            },
+
+            error: function( xhr, status ) {
+                updateStatusBar(t('oclife', 'Unable to get files list!'));
+            }
+            }); 
+            } 
+        }
+        
+        $('#myandorswitch').click(function() {switchevi()});
+        $('#myonoffswitch').click(function() {switchevi()});
+    
+
+        
+        function Obrisi() {
+            var i=0;
+            while(i<$pom5.childNodes.length) {
+                if($pom5.childNodes[i].childNodes[0].checked==true) {
+                    
+                    $.ajax({
+                        url: OC.filePath('oclife', 'ajax', 'tagsUpdate.php'),
+                        async: false,
+                        timeout: 1000,
+
+                        data: {
+                            op: 'remove',
+                            fileID: $pom6,
+                            tagID: $pom5.childNodes[i].childNodes[1].value
+                        },
+
+                        success:function(data) {
+                                    var selectedNodes = $("#tagstree").fancytree("getTree").getSelectedNodes();
+                                    var selNodesData = new Array();
+
+                                    for(i = 0; i < selectedNodes.length; i++) {
+                                        var nodeData = new Object();
+                                        nodeData.key = selectedNodes[i].key;
+                                        nodeData.title = selectedNodes[i].title;
+
+                                        selNodesData.push(nodeData);
+                                    }
+
+                                    var tags = JSON.stringify(selNodesData);
+                                    if(tags.length>2){
+                                    $.ajax({
+                                        url: OC.filePath('oclife', 'ajax', 'searchFilesFromTags.php'),
+
+                                        data: {
+                                            tags: tags,
+                                             listgrid: $("#myonoffswitch")[0].checked,
+                                            andor:$("#myandorswitch")[0].checked
+                                        },
+
+                                        type: "POST",
+
+                                        success: function( result ) {
+                                            $("#oclife_fileList").html(result);
+
+                                            if(result === '') {
+                                                $("#oclife_emptylist").css("display", "block");
+                                            } else {
+                                                $("#oclife_emptylist").css("display", "none");
+                                            }
+                                        },
+
+                                        error: function( xhr, status ) {
+                                            updateStatusBar(t('oclife', 'Unable to get files list!'));
+                                        }
+                                    });  }
+                        },
+
+                        error: function (xhr, status) {
+                            window.alert(t('oclife', 'Unable to add the tag! Ajax error.'));
+                            $(eventData.relatedTarget).addClass('invalid');
+                        },
+
+                        type: "POST"});  
+                    
+                   }
+                i++;
+            }
+        }
+        
+    $('#oclife_fileTable').delegate(
+        "#Preview",
+        "mousedown",
+        function() {
+            $down.css({"visibility":"hidden"});
+            $del.css({"visibility":"hidden"});
+            $preview.css({"visibility":"hidden"});
+            var fileID = $(this).parent().attr("data-fileid");
+            var filePath = $(this).parent().attr("data-fullPath");
+            var nesto=filePath.split(".");
+            var extension=nesto[nesto.length-1].toLowerCase();
+            if(extension=="jpg" || extension=="jpeg" || extension=="png" || extension=="tiff") {
+                showPreview(filePath);
+            }  
+            if(extension=="pdf") {
+               
+                    showPDFviewerPom("%2F",filePath);
+                
+            }
+            
+        });
+        
+        
 
         $(window).resize(function(){
             if(previewShown) {
@@ -298,7 +680,7 @@ $(document).ready(function() {
             }
         }).resize();
 
-    $("#fileTable").delegate(
+    $("#oclife_fileTable").delegate(
         "#imagePreview",
         "click",
         function(eventData) {
@@ -489,12 +871,17 @@ $(document).ready(function() {
     function renameTag() {
         var bValid = true;
         allFields.removeClass( "ui-state-error" );
-        bValid = bValid && checkLength( tagName, 1, 20 );
+        //bValid = bValid && checkLength( tagName, 1, 20 );
+        bValid = bValid && checkLength( document.getElementById("tagName"), 1, 80 );
 
         if ( bValid ) {
+            /*
             var newValue = tagName.value;
             var tagToMod = tagID.value;
-
+            */
+            var newValue = document.getElementById("tagName").value;
+            var tagToMod = document.getElementById("tagID").value;
+           
             $.ajax({
                 url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
                 async: false,
@@ -525,11 +912,14 @@ $(document).ready(function() {
                         newNode.setActive(true);
 
                         updateStatusBar(t('oclife', 'Rename done!'));
+                        $(".fancytree-active").css("font-weight","bold");
+                        var node = $("#tagstree").fancytree("getRootNode");
+                        node.sortChildren(null, true);
                     } else if(resultData.result === 'NOTALLOWED' ) {
 			updateStatusBar(t('oclife', 'Unable to rename! Permission denied!'));
 		    } else {
-                        updateStatusBar(t('oclife', 'Unable to rename! Data base error!'));
-                    }
+                        updateStatusBar(t('oclife', 'Tag')+" \""+resultData.title+"\" "+t('oclife', 'already exists'));
+                   }
                 },
 
                 error: function( xhr, status ) {
@@ -579,11 +969,14 @@ $(document).ready(function() {
     function insertTag() {
         var bValid = true;
         allFields.removeClass( "ui-state-error" );
-        bValid = bValid && checkLength( newTagName, 1, 20 );
+        //bValid = bValid && checkLength( newTagName, 1, 20 );
+        bValid = bValid && checkLength( document.getElementById("newTagName"), 1, 80 );
 
         if ( bValid ) {
-            var newValue = newTagName.value;
-            var parent = parentID.value;
+          //  var newValue = newTagName.value;
+            //var parent = parentID.value;
+            var newValue = document.getElementById("newTagName").value;
+            var parent = document.getElementById("parentID").value;
 
             $.ajax({
                 url: OC.filePath('oclife', 'ajax', 'tagOps.php'),
@@ -603,7 +996,9 @@ $(document).ready(function() {
                     var resArray = jQuery.parseJSON(result);
                     if(resArray.result === 'OK') {
                         var node = $("#tagstree").fancytree("getActiveNode");
-
+                         if(node==null) {
+                             node = $("#tagstree").fancytree("getNodeByKey","-1");
+                        }
                         var nodeData = {
                             'title': resArray.title,
                             'key': parseInt(resArray.key),
@@ -614,8 +1009,12 @@ $(document).ready(function() {
                         newNode.setActive(true);
 
                         updateStatusBar(t('oclife', 'Tag created successfully!'));
+                        $(".fancytree-active").css("font-weight","bold");
+                        var node = $("#tagstree").fancytree("getRootNode");
+                        node.sortChildren(null, true);
+                        //location.reload();   
                     } else {
-                        updateStatusBar(t('oclife', 'Unable to create tag! Data base error!'));
+                        updateStatusBar(t('oclife', 'Tag')+" \""+resArray.title+"\" "+t('oclife', 'already exists'));
                     }
                 },
 
@@ -644,11 +1043,14 @@ $(document).ready(function() {
             },
 
             Delete: {
+                
+              
                 text: t('oclife', 'Delete'),
                 click: function() {
                     $( this ).dialog( "close" );
-
-                    var tagID = deleteID.value;
+                    //updateStatusBar(t('oclife', 'dada'));
+                   // var tagID = deleteID.value;
+                    var tagID = document.getElementById('deleteID').value;
 
                     if(tagID === "-1") {
                         updateStatusBar(t('oclife', 'Invalid tag number! Nothing done!'));
@@ -719,7 +1121,7 @@ $(document).ready(function() {
                 } else if(result === 'NOTALLOWED') {
                     updateStatusBar(t('oclife', 'Priviledge not changed! Permission denied!'));
                 } else {
-                    updateStatusBar(t('oclife', 'Priviledge not changed! Data base error!'));
+                    updateStatusBar(t('oclife', 'Priviledge not changed! Permission denied!'));
                 }
             },
             error: function( xhr, status ) {
@@ -752,6 +1154,98 @@ $(document).ready(function() {
 
         close: function() {
             $("#previewArea").attr("src", "");
-        }            
+        }
+    });   
+       
+    var broji=0;
+    var b=setInterval(function() {
+          var node = $("#tagstree").fancytree("getRootNode");
+           broji++;
+           node.sortChildren(null, true);     
+           if(broji==5) clearInterval(b);
+    },250);
+    
+    
+    $.ajax({
+        url: OC.filePath('oclife', 'ajax', 'SetMemcache.php'),
+        async: false,
+        success: function() {          
+        },
+        error: function() {           
+        }
     });
+   
+
+});
+
+
+
+
+
+
+
+function hidePDFviewerPom() {
+	$('#pdframe, #pdfbar').remove();
+	if ($('#isPublic').val() && $('#filesApp').val()){
+		$('#controls').removeClass('hidden');
+	}
+	//FileList.setViewerMode(false);
+	// replace the controls with our own
+        $(".oclife_ime").removeClass('hidden');
+	$('#app-content #controls').removeClass('hidden');
+        
+}
+
+function showPDFviewerPom(dir, filename) {
+	if(!showPDFviewerPom.shown) {
+		var $iframe;
+		var viewer = OC.linkTo('files_pdfviewer', 'viewer.php')+'?dir='+encodeURIComponent(dir).replace(/%2F/g, '/')+'&file='+encodeURIComponent(filename);
+		$iframe = $('<iframe id="pdframe" style="width:100%;height:100%;display:block;position:absolute;top:0;" src="'+viewer+'" sandbox="allow-scripts allow-same-origin" /><div id="pdfbar"><a id="close" title="Close">X</a></div>');
+		$down.css({"visibility":"hidden"});
+                $del.css({"visibility":"hidden"});
+                $preview.css({"visibility":"hidden"});
+                $('#content').append($iframe).css({height: '100%'});
+		$('body').css({height: '100%'});
+                $('footer').addClass('hidden');
+		$('#imgframe').addClass('hidden');
+		$('.directLink').addClass('hidden');
+		$('.directDownload').addClass('hidden');
+		$('#controls').addClass('hidden');
+		$(".oclife_ime").addClass('hidden');
+		$("#pageWidthOption").attr("selected","selected");
+		// replace the controls with our own
+		$('#app-content #controls').addClass('hidden');
+		$('#pdfbar').css({position:'absolute',top:'6px',right:'5px'});
+		$('#close').css({display:'block',padding:'0 5px',color:'#BBBBBB','font-weight':'900','font-size':'16px',height:'18px',background:'transparent'}).click(function(){
+                    $(".oclife_ime").removeClass('hidden');
+                    hidePDFviewerPom();
+			});		
+	}
+}
+showPDFviewerPom.oldCode='';
+showPDFviewerPom.lastTitle='';
+
+
+$(document).ready(function(){
+	// The PDF viewer doesn't work in Internet Explorer 8 and below
+	if(!$.browser.msie || ($.browser.msie && $.browser.version >= 9)){
+		var sharingToken = $('#sharingToken').val();
+
+		// Logged-in view
+		if ($('#filesApp').val() && typeof FileActions !=='undefined'){
+ 			FileActions.register('application/pdf','Edit', OC.PERMISSION_READ, '',function(filename){
+				if($('#isPublic').val()) {
+					showPDFviewerPom('', encodeURIComponent(sharingToken)+"&files="+encodeURIComponent(filename)+"&path="+encodeURIComponent(FileList.getCurrentDirectory()));
+				} else {
+					showPDFviewerPom(encodeURIComponent(FileList.getCurrentDirectory()), encodeURIComponent(filename));
+				}
+			});
+			FileActions.setDefault('application/pdf','Edit');
+		}
+
+		// Public view
+		if ($('#isPublic').val() && $('#mimetype').val() === 'application/pdf') {
+			showPDFviewerPom('', sharingToken);
+		}
+	}
 });

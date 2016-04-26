@@ -24,7 +24,7 @@
  * @author fpiraneo
  */
 
-namespace OCA\OCLife;
+namespace OCA\oclife;
 
 class exifHandler {
     private $imagePath;

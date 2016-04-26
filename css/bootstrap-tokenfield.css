@@ -29,6 +29,7 @@
 }
 .tokenfield {
   height: auto;
+  
   min-height: 34px;
   padding-bottom: 0px;
 }
@@ -110,7 +111,7 @@
 }
 .tokenfield .token-input {
   background: none;
-  width: 60px;
+  //width: 60px;
   min-width: 60px;
   border: 0;
   height: 20px;

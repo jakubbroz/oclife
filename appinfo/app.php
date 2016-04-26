@@ -43,6 +43,7 @@
 //$l = new \OC_L10N('oclife');
 $l = \OCP\Util::getL10N('oclife');
 
+
 // Add what's needed by TagManager
 \OCP\Util::addStyle('oclife', 'bootstrap-tokenfield');
 \OCP\Util::addStyle('oclife', 'oclife_fileInfo');
@@ -56,5 +57,5 @@ $l = \OCP\Util::getL10N('oclife');
 \OCP\Util::addscript('oclife', 'oclife/oclife_fileExtendedInfo');
 
 // Register filesystem hooks to remove thumbnails and tags DB entries
-\OCP\Util::connectHook('OC_Filesystem', 'delete', 'OCA\OCLife\utilities', 'cleanupForDelete');
-\OCP\Util::connectHook('OC_Filesystem', 'rename', 'OCA\OCLife\utilities', 'cleanupForRename');
+\OCP\Util::connectHook('OC_Filesystem', 'delete', 'OCA\oclife\utilities', 'cleanupForDelete');
+\OCP\Util::connectHook('OC_Filesystem', 'rename', 'OCA\oclife\utilities', 'cleanupForRename');

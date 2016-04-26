@@ -18,8 +18,14 @@
  * along with oclife.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\OCLife;
+namespace OCA\oclife;
+
+
+
+
 class utilities {
+    
+   
     /**
      * Format a file size in human readable form
      * @param integer $bytes File size in bytes
@@ -37,9 +43,9 @@ class utilities {
 
         $result = round($dimension, $precision) . ' ' . $units[$pow];
         
-        if($addOriginal === TRUE) {
-            $result .= sprintf(" (%s bytes)", number_format($bytes));
-        }
+       // if($addOriginal === TRUE) {
+        //    $result .= sprintf(" (%s bytes)", number_format($bytes));
+        //}
         
         return $result;
     }
@@ -51,16 +57,17 @@ class utilities {
     public static function cleanupForDelete($params) {
         // Get full thumbnail path
         $path = $params['path'];
-        \OCA\OCLife\utilities::deleteThumb($path);
+        \OCA\oclife\utilities::deleteThumb($path);
 
         // Now remove all entry in DB for this file
         // -- Verificare che qui esista l'entry del file nel DB!!! :-///
         $fileInfos = \OC\Files\Filesystem::getFileInfo($path);
         if($fileInfos['fileid']) {
-            $result = \OCA\OCLife\hTags::removeAllTagsForFile($fileInfos['fileid']);
+            $result = \OCA\oclife\hTags::removeAllTagsForFile($fileInfos['fileid']);
         }
         return $result;
     }
+    
     
     /**
      * Rename thumbnail after file rename
@@ -68,7 +75,7 @@ class utilities {
      */
     public static function cleanupForRename($params) {
         $oldPath = $params['oldpath'];
-        \OCA\OCLife\utilities::deleteThumb($oldPath);
+        \OCA\oclife\utilities::deleteThumb($oldPath);
         return TRUE;
     }
 
@@ -98,20 +105,20 @@ class utilities {
     * @param boolean $indexed Output result as dictionary array with fileID as index
     * @return array ID of all the files
     */
-    public static function getFileList($user, $path = '', $onlyID = FALSE, $indexed = FALSE) {
+    public static function getFileList($user, $path = '') {
         $oc_version = $_SESSION['OC_Version'][0];
         
         if($oc_version >= 7) {
-            $myres = \OCA\OCLife\utilities::getOC7FileList($user, $path, $onlyID, $indexed);
+            $myres = \OCA\oclife\utilities::getOC7FileList($user, $path);
             return $myres;
         } else {
-            return \OCA\OCLife\utilities::getOC6FileList($user, $path, $onlyID, $indexed);            
+            return \OCA\oclife\utilities::getOC6FileList($user, $path);            
         }
     }
     
-    private static function getOC6FileList($user, $path, $onlyID, $indexed) {
+    private static function getOC6FileList($user, $path) {
         $result = array();
-
+        
         $dirView = new \OC\Files\View('/' . $user);
         $dirContent = $dirView->getDirectoryContent($path);
         
@@ -119,10 +126,10 @@ class utilities {
             $itemRes = array();
             
             if(strpos($item['mimetype'], 'directory') === FALSE) {
-                $fileData = array('fileid'=>$item['fileid'], 'name'=>$item['name'], 'mimetype'=>$item['mimetype']);
+                $fileData = array('fileid'=>$item['fileid'], 'name'=>$item['name'], 'mimetype'=>$item['mimetype'],'size'=>$item['size'],'date'=>$item['mtime']);
                 $fileData['path'] = isset($item['usersPath']) ? $item['usersPath'] : $item['path'];
                         
-                $itemRes[] = ($onlyID) ? $item['fileid'] : $fileData;
+                $itemRes[] = $fileData;
             } else {
                 // Case by case build appropriate path
                 if(isset($item['usersPath'])) {
@@ -136,18 +143,20 @@ class utilities {
                     $itemPath = 'files/' . $item['name'];
                 }
 
-                $itemRes = \OCA\OCLife\utilities::getOC6FileList($user, $itemPath, $onlyID, $indexed);
+                
+                $itemRes = \OCA\oclife\utilities::getOC6FileList($user, $itemPath);
             }            
             
-            foreach($itemRes as $item) {
-                if($onlyID) {
-                    $result[] = intval($item);
-                } else {
-                    if($indexed) {
-                        $result[intval($item['fileid'])] = $item;
-                    } else {
-                        $result[] = $item;
-                    }
+            if(class_exists('Memcache')) {
+                $memcached=new \Memcache();
+                $memcached->addServer('localhost', 11211);    
+                foreach($itemRes as $item) {              
+                     $memcached->set(intval($item['fileid']), $item);  
+                }
+            }
+            else {
+                foreach($itemRes as $item) {
+                    $result[intval($item['fileid'])] = $item;
                 }
             }
         }
@@ -155,16 +164,18 @@ class utilities {
         return $result;        
     }
 
-    private static function getOC7FileList($user, $path, $onlyID, $indexed) {
-        $result = array();
-
+    public static function getOC7FileList($user, $path) {
         $dirView = new \OC\Files\View('/' . $user);
         $dirContent = $dirView->getDirectoryContent($path);
         
+        
+         $result=array();
         foreach($dirContent as $item) {
             $fileID = $item->getId();
             $fileMime = $item->getMimetype();
             $fileName = $item->getName();
+            $fileDate=$item->getMTime();
+            $fileSize= $item->getSize();
             $filePath = substr($item->getPath(), strlen($user) + 2);
             
             $itemRes = array();
@@ -174,28 +185,43 @@ class utilities {
                     'fileid' => $fileID,
                     'name' => $fileName,
                     'mimetype' => $fileMime,
+                    'size'=> $fileSize,
+                    'date'=>$fileDate,
                     'path' => $filePath
                 );
                         
-                $itemRes[] = ($onlyID) ? $fileID : $fileData;
+                $itemRes[] = $fileData;
             } else {
-                $itemRes = \OCA\OCLife\utilities::getOC7FileList($user, $filePath, $onlyID, $indexed);
+                $itemRes = \OCA\oclife\utilities::getOC7FileList($user, $filePath);
             }            
             
-            foreach($itemRes as $item) {
-                if($onlyID) {
-                    $result[] = intval($item);
-                } else {
-                    if($indexed) {
-                        $result[intval($item['fileid'])] = $item;
-                    } else {
-                        $result[] = $item;
-                    }
+            if(class_exists('Memcache')) {
+            $memcached=new \Memcache();
+            $memcached->addServer('localhost', 11211);
+            foreach($itemRes as $item) {               
+                 $memcached->set(intval($item['fileid']), $item);   
                 }
             }
+            else {
+              
+               foreach($itemRes as $item) {               
+                    $result[intval($item['fileid'])] = $item;
+                }
+                
+            }
+            
         }
-
-        return $result;        
+        return $result;
+    }
+    
+    
+    public static function clearMemcache(){
+        if(class_exists('Memcache')){
+            $memcashed=new \Memcache();
+            $memcashed->connect('localhost');
+            $memcashed->flush();
+            $memcashed->close();
+        }
     }
     
     /**
@@ -204,28 +230,42 @@ class utilities {
      * @param array $filesID IDs of the file to look at
      * @return array Associative array with required infos
      */
+    
     public static function getFileInfoFromID($user, $filesID) {
         if(!is_array($filesID)) {
             return -1;
         }
         
-        $usersFile = utilities::getFileList($user, '/files', false, true);
-        
-        if($usersFile === -1) {
-            return -2;
-        }
-        
         // Loop through the provided file ID and return all result
         $result = array();
         
-        foreach($filesID as $fileID) {
-            if(isset($usersFile[$fileID])) {
-                $result[$fileID] = $usersFile[$fileID];
+        if(class_exists('Memcache')) {
+            $memcashed=new \Memcache();
+            $memcashed->connect('localhost');
+            foreach($filesID as $fileID) {
+                if(($a=$memcashed->get($fileID))!='') {
+                    $result[$fileID] = $a;
+                }
+            }
+        }
+        else {
+            $usersFile = utilities::getFileList($user, '/files');
+            
+            if($usersFile === -1) {
+                return -2;
+            }
+            
+            foreach($filesID as $fileID) {
+                if(isset($usersFile[$fileID])) {
+                    $result[$fileID] = $usersFile[$fileID];
+                }
             }
         }
         
         return $result;
     }
+    
+    
     
     /**
      * Prepare an image tile
@@ -233,18 +273,84 @@ class utilities {
      * @return string
      */
     public static function prepareTile($fileData) {
+        
         $pathInfo = substr(pathinfo($fileData['path'], PATHINFO_DIRNAME), 6);
         $filePath = strpos($fileData['path'], 'files') === FALSE ? $fileData['path'] : substr($fileData['path'], 5);
         
         $result = '<div class="oclife_tile" data-fileid="' . $fileData['fileid'] . '" data-filePath="' . $pathInfo . '" data-fullPath="' . $filePath . '">';
-        $result .= '<div>' . $fileData['name'] . '</div>';
-        $thumbPath = \OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
+        $result .= '<div class="oclife_ime">' . $fileData['name'] . '</div>';
+        
+        $exts = preg_split("/[\.]/", $fileData['name']);
+        $n    = count($exts)-1;
+        $ext  =strtolower($exts[$n]);
+             
+
+             if(strcmp($ext,"pdf")==0) {              
+                  $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/PDFLogo.jpg');
+            }
+            else if(strcmp($ext,"xls")==0 || strcmp($ext,"xlsx")==0) {
+               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/xls.png');}
+            else if(strcmp($ext,"mp3")==0 || strcmp($ext,"audio")==0 || strcmp($ext,"wav")==0 || strcmp($ext,"aac")==0 || strcmp($ext,"wma")==0){
+               $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/music.jpg'); 
+            }
+            else if(strcmp($ext,"odt")==0 || strcmp($ext,"doc")==0 || strcmp($ext,"docx")==0 || strcmp($ext,"srt")==0 || strcmp($ext,"txt")==0 || strcmp($ext,"asa")==0 || strcmp($ext,"rtf")==0) {
+                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/text.png');
+            }
+            else if(strcmp($ext,"mp4")==0 || strcmp($ext,"avi")==0 || strcmp($ext,"flv")==0 || strcmp($ext,"mpeg")==0 || strcmp($ext,"m4v")==0 || strcmp($ext,"mkv")==0) {
+                $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/video.png');
+            }
+            else if(strcmp($ext,"ppt")==0 || strcmp($ext,"pptx")==0)  {
+                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/presentacion.jpg');
+            }
+            else if(strcmp($ext,"zip")==0 || strcmp($ext,"7z")==0 || strcmp($ext,"rar")==0 || strcmp($ext,"tar.gz")==0 || strcmp($ext,"tar")==0) {
+                    $thumbPath=  \OCP\Util::linkToAbsolute('/apps/oclife', '/img/zip.jpg');
+            }
+            else {
+            $thumbPath = \OCP\Util::linkToAbsolute('oclife', 'getThumbnail.php', array('filePath' => $filePath));
+            }
+        
+        
         $result .= '<img src="' . $thumbPath . '" />';
         $result .= '</div>';
         
         return $result;
     }
     
+    public static function prepareTile1($fileData) {
+       
+        $name=$fileData['name'];
+        $size=\OCA\oclife\utilities::formatBytes($fileData['size'], 2, TRUE);
+        $date=date('d/m/Y H:i:s', strtotime('+1 hours', $fileData['date']));
+        
+         
+        $pathInfo = substr(pathinfo($fileData['path'], PATHINFO_DIRNAME), 6);
+        $filePath = strpos($fileData['path'], 'files') === FALSE ? $fileData['path'] : substr($fileData['path'], 5);
+        
+                
+        $result="<tr filepath='".$filePath."' fileid='".$fileData['fileid']."'><td>".$name."</td>";
+       
+        $exts = preg_split("/[\.]/", $fileData['name']);
+        $n    = count($exts)-1;
+        $extension  =strtolower($exts[$n]);
+         $l = new \OC_L10N('oclife');
+        if($extension=="jpg" || $extension=="jpeg" || $extension=="png" || $extension=="tiff" || $extension=="pdf") {              
+        
+            $result.="<td id='download'><button id='sivo'>".$l->t('Download')."</button></td><td id='preview'><button id='sivo'>".$l->t('Preview')."</button></td><td id='delete'><button id='sivo'>".$l->t('Delete tag')."</button></td>";
+        }    
+        else {
+            $result.="<td id='download'><button id='sivo'>".$l->t('Download')."</button></td><td></td><td id='delete'><button id='sivo'>".$l->t('Delete tag')."</button></td>";
+        }
+
+       
+       
+       
+        $result.="<td id='kraj'>".$size."</td><td id='kraj'>".$date."</td></tr>";
+        return $result;
+         
+        
+    
+            
+    }
     /**
      * Glue an array with key and value on an html table
      * @param Array $myArray
@@ -297,6 +403,7 @@ class utilities {
 
         return $result;
     }
+    
 
     /**
      * Get all users in the indicated group
@@ -310,8 +417,16 @@ class utilities {
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute();
         } else {
+            $gsql='Select `gid` from `*PREFIX*users` WHERE `uid`=?';
+            $query= \OCP\DB::prepare($sql); 
+            $resRsrc = $query->execute($user);
+            $group=array();
+            while($row = $resRsrc->fetchRow()) {
+                $group[]=$row['gid'];
+            }
+            
             $sql = 'SELECT `uid`, `displayname` FROM `*PREFIX*users` WHERE `uid` IN (SELECT `uid` FROM *PREFIX*group_user WHERE `gid` = ?) ORDER BY `displayname`';
-            $args = array($group);            
+            $args = $group;            
             $query = \OCP\DB::prepare($sql);
             $resRsrc = $query->execute($args);
         }

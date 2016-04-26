@@ -25,17 +25,19 @@ $rawFilesData = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_URL);
 $filesData = json_decode($rawFilesData);
 
 if(is_array($filesData)) {
-    $tagCodes = \OCA\OCLife\hTags::getCommonTagsForFiles($filesData);
+    $tagCodes = \OCA\oclife\hTags::getCommonTagsForFiles($filesData);
 } else {
-    $tagCodes = \OCA\OCLife\hTags::getAllTagsForFile($filesData);
+    $tagCodes = \OCA\oclife\hTags::getAllTagsForFile($filesData);
 }
 
-$tags = new \OCA\OCLife\hTags();
+$tags = new \OCA\oclife\hTags();
 
 $result = array();
 foreach($tagCodes as $tagID) {
     $tagData = $tags->searchTagFromID($tagID);
-    $result[] = new \OCA\OCLife\tag($tagID, $tagData['xx']);
+    //$result[] = new \OCA\oclife\tag($tagID, $tagData['xx']);
+    $result[] = array ( "value"=>$tagID,"label"=>$tagData['xx'],"read"=>$tags->readAllowed($tagID),"write"=>$tags->writeAllowed($tagID));
+    
 }
 
 $jsonTagData = json_encode((array) $result);

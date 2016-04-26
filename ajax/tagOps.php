@@ -53,7 +53,7 @@ if($parentID === FALSE || $tagName === FALSE || strlen($tagLang) === 0 || strlen
 
 // For write operations check if tag can be written
 if($tagOp == 'rename' || $tagOp == 'delete') {
-	if(!\OCA\OCLife\hTags::writeAllowed($tagID)) {
+	if(!\OCA\oclife\hTags::writeAllowed($tagID)) {
 		$result = array(
 			'result' => 'NOTALLOWED',
 			'title' => '',
@@ -64,33 +64,75 @@ if($tagOp == 'rename' || $tagOp == 'delete') {
 	}
 }
 
+
+
 // Tag handler instance
-$ctags = new \OCA\OCLife\hTags();
+$ctags = new \OCA\oclife\hTags();
+
+//Only owner can delete tag
+if(($ctags->getTagOwner($tagID)!=\OCP\User::getUser() && !\OC_User::isAdminUser(\OCP\User::getUser()))  && $tagOp == 'delete') {
+                $result = array(
+			'result' => 'NOTALLOWED',
+			'title' => '',
+			'key' => $tagID
+		);
+
+		die(json_encode($result));
+}
 
 // Switch between possible operations
 switch($tagOp) {
     case 'new': {
         $tagID = $ctags->newTag($tagLang, $tagName, $parentID);
+        if(is_numeric($tagID)) {
         $permission = $ctags->getTagPermission($tagID);
         $result = TRUE;
-        
+        }
+        else {
+            $result1=$tagID;
+            $result=FALSE;
+        }
         break;
     }
     
     case 'rename': {
         $tagData = array($tagLang => $tagName);
+        
+        $ctags1 = new \OCA\oclife\hTags();
+        $tagData1 = $ctags1->getAllTags('xx');
+        $searchKey = $tagName;
+        $cvrc=0;
+        $result1 = 0;
+
+        foreach($tagData1 as $tag) {
+            if($tag['tagid'] !== '-1' && $tag['tagid'] !==$tagID) {       
+                if(strcmp(strtolower($tag['descr']), strtolower($searchKey))== 0) {
+                    $result1= $tag['descr'];
+                    $cvrc=1;
+                    break;
+                    }         
+                }
+            }
+        
+        if($cvrc == 1) {
+            $result= FALSE;
+            break;
+        }
+        
+        
         $result = $ctags->alterTag($tagID, $tagData);
         $permission = $ctags->getTagPermission($tagID);
+        $owner = $ctags->getTagOwner($tagID);
         
         break;
     }
     
-    case 'delete': {
+    case 'delete': {       
         $result = $ctags->deleteTagAndChilds(intval($tagID));
         $permission = '';
         $owner = '';
-        
         break;
+        
     }
     
     case 'info': {
@@ -113,7 +155,7 @@ switch($tagOp) {
 if($result === FALSE) {
     $result = array(
         'result' => 'KO',
-        'title' => '',
+        'title' => $result1,
         'key' => ''
     );
 } else {

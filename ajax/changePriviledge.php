@@ -31,21 +31,17 @@ if(!isset($tagID) || (!isset($priviledge) && !isset($tagOwnerToSet))) {
     die($result);
 }
 
-// If we have to perform an owner change and we're not admin then forfait
-// NOTE: Disabling the owner menu from javascript is fine but we need a function
-// to check if logged user is an admin
-if(isset($tagOwnerToSet) && !OC_User::isAdminUser(OC_User::getUser())) {
-    $result = json_encode(array('result'=>'NOTALLOWED', 'newpriviledges' => '', 'newowner' => ''));
-    die($result);
-}
 
-// Perform the requested operation
-$ctags = new \OCA\OCLife\hTags();
-
+$ctags = new \OCA\oclife\hTags();
 $user = \OCP\User::getUser();
 $tagOwner = $ctags->getTagOwner($tagID);
 
-if($ctags->writeAllowed($tagID, $user) || $user === $tagOwner) {
+
+    if(!(OC_User::isAdminUser(OC_User::getUser()) || $user === $tagOwner)) {
+    $result = json_encode(array('result'=>'NOTALLOWED', 'newpriviledges' => '', 'newowner' => ''));
+    die($result);
+    }
+    else {
     if(isset($priviledge)) {
         // Set priviledges
         $newPriviledges = $ctags->setTagPermission($tagID, $priviledge);
@@ -57,8 +53,6 @@ if($ctags->writeAllowed($tagID, $user) || $user === $tagOwner) {
     }
 
     $result = json_encode(array('result'=>'OK', 'newpriviledges' => $newPriviledges, 'newowner' => $newOwner));    
-} else {
-    $result = json_encode(array('result'=>'NOTALLOWED', 'newpriviledges' => '', 'newowner' => ''));
-}
+    }
 
 echo $result;

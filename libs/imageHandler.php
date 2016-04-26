@@ -24,7 +24,7 @@
  * The only constraint is the presence of 'tags' field.
  */
 
-namespace OCA\OCLife;
+namespace OCA\oclife;
 class ImageHandler {
     private $handableImageType;
     private $width;
@@ -360,7 +360,7 @@ class ImageHandler {
         // Get number of images and choose the best for the resolution of the thumbnail
         //$imgsNumber = $imageHandler->getnumberimages();
         $imageInfo = $imageHandler->getImageProperties();
-        $orientation = \OCA\OCLife\ImageHandler::getRotation($imageInfo['exif:Orientation']);
+        $orientation = \OCA\oclife\ImageHandler::getRotation($imageInfo['exif:Orientation']);
         $imageHandler->setiteratorindex(0);
         $imageHandler->rotateImage($this->htmlBgColor, $orientation); 
         
